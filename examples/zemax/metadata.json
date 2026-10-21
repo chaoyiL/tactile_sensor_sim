@@ -1,0 +1,186 @@
+{
+  "backend": "zemax",
+  "sensor_array_order": "height,width,RGB",
+  "sensor_unit": "W/m^2 per independent RGB band",
+  "image_encoding": "fixed exposure + camera response matrix + sRGB",
+  "config": {
+    "surface": {
+      "size_mm": [
+        30.0,
+        24.0
+      ],
+      "view_side_z": -1,
+      "reflectance_rgb": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    "indentation": {
+      "center_xy_mm": [
+        1.5,
+        -0.8
+      ],
+      "radius_mm": 6.0,
+      "depth_mm": 1.0,
+      "direction_z": -1
+    },
+    "lights": [
+      {
+        "side": "left",
+        "offset_mm": 2.0,
+        "z_mm": -4.0,
+        "length_mm": 24.0,
+        "width_mm": 1.0,
+        "power_rgb_w": [
+          0.1,
+          0.0,
+          0.0
+        ],
+        "cosine_exponent": 1.0,
+        "samples_length": 24,
+        "samples_width": 2
+      },
+      {
+        "side": "right",
+        "offset_mm": 2.0,
+        "z_mm": -4.0,
+        "length_mm": 24.0,
+        "width_mm": 1.0,
+        "power_rgb_w": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "cosine_exponent": 1.0,
+        "samples_length": 24,
+        "samples_width": 2
+      },
+      {
+        "side": "top",
+        "offset_mm": 2.0,
+        "z_mm": -4.0,
+        "length_mm": 30.0,
+        "width_mm": 1.0,
+        "power_rgb_w": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "cosine_exponent": 1.0,
+        "samples_length": 24,
+        "samples_width": 2
+      },
+      {
+        "side": "bottom",
+        "offset_mm": 2.0,
+        "z_mm": -4.0,
+        "length_mm": 30.0,
+        "width_mm": 1.0,
+        "power_rgb_w": [
+          0.05,
+          0.05,
+          0.0
+        ],
+        "cosine_exponent": 1.0,
+        "samples_length": 24,
+        "samples_width": 2
+      }
+    ],
+    "camera": {
+      "width_px": 320,
+      "height_px": 256,
+      "fx_px": 350.0,
+      "fy_px": 350.0,
+      "cx_px": 159.5,
+      "cy_px": 127.5,
+      "position_mm": [
+        0.0,
+        0.0,
+        -32.0
+      ],
+      "look_at_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "up_world": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "focal_length_mm": 3.0,
+      "response_rgb_3x3": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "render": {
+      "shadows": true,
+      "exposure_scale": 6000.0,
+      "tone_map": "reinhard"
+    },
+    "zemax": {
+      "install_dir": "D:\\Program Files\\Ansys Zemax OpticStudio 2024 R1.00",
+      "nethelper_dll": null,
+      "mesh_step_mm": 0.2,
+      "pinhole_half_width_mm": 0.004,
+      "rays_per_strip": 8000000,
+      "random_seed": 17,
+      "wavelengths_rgb_um": [
+        0.63,
+        0.53,
+        0.46
+      ]
+    }
+  },
+  "triangles": 36000,
+  "bands": [
+    {
+      "band": "R",
+      "seconds": 14.478367899999284,
+      "irradiance_sum_w_m2": 7.886673834285473,
+      "tool_message": "None",
+      "ray_error_energy_w": 1.2501263220867143e-08,
+      "threshold_discarded_energy_w": 6.04032859598755e-38,
+      "source_energy_w": 0.15000000000000002
+    },
+    {
+      "band": "G",
+      "seconds": 13.99640460000046,
+      "irradiance_sum_w_m2": 7.87617680204333,
+      "tool_message": "None",
+      "ray_error_energy_w": 1.2427798290532621e-12,
+      "threshold_discarded_energy_w": 2.0664626372616632e-38,
+      "source_energy_w": 0.15000000000000002
+    },
+    {
+      "band": "B",
+      "seconds": 6.830384099999719,
+      "irradiance_sum_w_m2": 5.613493314823321,
+      "tool_message": "None",
+      "ray_error_energy_w": 8.925380135052919e-13,
+      "threshold_discarded_energy_w": 4.271007233394614e-38,
+      "source_energy_w": 0.1
+    }
+  ],
+  "opticstudio_version": "231205",
+  "license": "PremiumEdition",
+  "cad_file_installed": "C:\\Users\\30362\\Documents\\Zemax\\OBJECTS\\CAD Files\\tactile_088d01a815f8.STL",
+  "coating_file_installed": "C:\\Users\\30362\\Documents\\Zemax\\COATINGS\\tactile_088d01a815f8.DAT",
+  "square_pinhole_half_width_mm": 0.004,
+  "geometry_gt_source": "analytic cap; Zemax traces its triangulated STL approximation"
+}

@@ -1,0 +1,30 @@
+[project]
+name = "tactile-sensor-sim"
+version = "0.1.0"
+description = "Optical tactile sensor simulation with analytic and Zemax backends"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "numpy>=1.24",
+    "Pillow>=10",
+    "pythonnet==3.0.5; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+calibration = [
+    "matplotlib>=3.8",
+    "scipy>=1.15",
+]
+gpu = [
+    "torch==2.12.1",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true

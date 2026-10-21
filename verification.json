@@ -1,0 +1,44 @@
+{
+  "tested_on_client_date": "2026-10-20",
+  "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:21:58) [MSC v.1929 64 bit (AMD64)]",
+  "pythonnet": "3.0.5",
+  "numpy": "2.4.1",
+  "opticstudio": "Ansys Zemax OpticStudio 2024 R1.00; PremiumEdition",
+  "unit_tests": {
+    "passed": 7,
+    "failed": 0,
+    "command": "python -m unittest discover -s tests -v"
+  },
+  "full_example": {
+    "resolution_px": [
+      320,
+      256
+    ],
+    "rays_per_active_strip_band": 8000000,
+    "zemax_over_analytic_band_energy_ratios": [
+      0.9983931321481808,
+      0.9989885418892547,
+      0.9970301425136658
+    ],
+    "max_relative_band_energy_difference": 0.00296985748633416,
+    "pixel_pearson_correlation_rgb": [
+      0.9786904798435194,
+      0.9787981002206904,
+      0.9788874695502517
+    ],
+    "notes": "Identical optical parameters, fixed display exposure. Analytic uses exact cap and small-pinhole limit; Zemax uses a triangulated cap, finite square pinhole, Monte Carlo sampling."
+  },
+  "oblique_camera_validation": {
+    "energy_ratios": [
+      0.9991620502520036,
+      0.9925752620650353,
+      0.9946657379878181
+    ],
+    "pixel_correlations": [
+      0.983479270224887,
+      0.9802502911660322,
+      0.9811771664495671
+    ],
+    "description": "Tilted camera, unequal fx/fy, off-center principal point"
+  }
+}
