@@ -1,0 +1,33 @@
+{
+  "backend": "mujoco",
+  "surface": {"size_mm": [17.3, 29.14], "view_side_z": -1},
+  "indentation": {"center_xy_mm": [0.0, 0.0], "radius_mm": 6.0, "depth_mm": 1.0, "direction_z": -1},
+  "mujoco": {
+    "python_executable": ".venv-xense/Scripts/python.exe",
+    "sensor_mode": "simple",
+    "calibrate_file": "bundled:g1-ws_table",
+    "depth_size_wh": [174, 293],
+    "mesh_size_wh": [174, 293],
+    "render_size_wh": [416, 700],
+    "camera_gap_mm": 10.0,
+    "smooth_norm": 0,
+    "smooth_mesh": 0,
+    "marker_policy": "require_absent"
+  },
+  "calibration": {
+    "output_dir": "results_lut/mujoco_xense",
+    "scan": {"xy_step_mm": [2.0, 2.0], "depth_min_mm": 0.5,
+             "depth_max_mm": 1.5, "depth_step_mm": 0.5, "include_endpoints": true},
+    "material_grid": {"step_xy_mm": [0.1, 0.1]},
+    "sampling": {"contact_margin_mm": 0.0, "minimum_reference_dot": 0.1,
+                 "min_samples_per_pose": 16},
+    "lut": {"size": 64, "maximum_rms_angle_degrees": 5.0},
+    "validation": {"fraction": 0.2, "rms_degrees": 20.0,
+                   "maximum_out_of_range_fraction": 0.05},
+    "visualization": {"enabled": true, "difference_gain": 2.0,
+                      "color_distance_threshold": 0.01,
+                      "normal_angle_threshold_degrees": 20.0,
+                      "ambiguity_stride": 10, "branch_dominance_fraction": 0.8,
+                      "export_ambiguity_pairs": false}
+  }
+}

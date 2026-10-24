@@ -1,0 +1,17 @@
+{
+  "format_version": 1,
+  "norm_diff": {
+    "noise_fraction": 0.03,
+    "noise_floor": 0,
+    "theta_weight": 1,
+    "phi_weight": 1,
+    "theta_bins": 12,
+    "phi_bins": 24,
+    "anchors_per_target": 1,
+    "theta_ceiling_degrees": null
+  },
+  "norm_diff_evaluation": {
+    "color_input": "observed",
+    "validate_lut_noise": false
+  }
+}

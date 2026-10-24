@@ -12,10 +12,14 @@ dependencies = [
 [project.optional-dependencies]
 calibration = [
     "matplotlib>=3.8",
+    "numba>=0.68",
     "scipy>=1.15",
 ]
 gpu = [
     "torch==2.12.1",
+]
+gpu-compile = [
+    "triton-windows==3.7.1.post27; sys_platform == 'win32'",
 ]
 
 [tool.uv]

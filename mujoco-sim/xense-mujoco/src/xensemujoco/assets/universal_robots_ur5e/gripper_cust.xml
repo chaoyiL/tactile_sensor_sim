@@ -1,0 +1,32 @@
+<mujoco>
+    <asset>
+        <material name="mat_base" rgba="0.2 0.2 0.2 1"/>
+        <mesh name="mesh_base" file="gripper_base_link.obj"/>
+        <mesh name="mesh_finger_left" file="finger_link1.STL"/>
+        <mesh name="mesh_finger_right" file="finger_link2.STL"/>
+    </asset>
+
+    <worldbody>
+        <body name="gripper_base" pos="0 0.1 0" euler="-1.5707963 0 0">
+            <geom name="base_visual" type="mesh" mesh="mesh_base" material="mat_base" />
+            <body name="finger_left" pos="0.04 0 0.08" euler="0 -1.5707963 0">
+                <joint name="slider_left" type="slide" axis="0 0 1" range="0 0.04" />
+                <geom name="finger_left_visual" type="mesh" mesh="mesh_finger_left"  />
+            </body>
+            <body name="finger_right" pos="-0.04 0 0.08" euler="3.1415926 1.5707963 0">
+                <joint name="slider_right" type="slide" axis="0 0 1" range="0 0.04" />
+                <geom name="finger_right_visual" type="mesh" mesh="mesh_finger_right"  />
+            </body>
+        </body>
+    </worldbody>
+
+    <equality>
+        <!-- q_left - q_right = 0 → 两指同步 -->
+        <joint joint1="slider_left" joint2="slider_right" polycoef="0 1"/>
+    </equality>
+
+    <actuator>
+        <position name="finger_pos" joint="slider_left" kp="100" kv="10" ctrlrange="0 0.04"/>
+    </actuator>
+
+</mujoco>

@@ -14,12 +14,16 @@ import time
 import numpy as np
 from PIL import Image, ImageDraw
 
+from .calibration_ambiguity import save_ambiguity_inputs
 from .calibration_samples import (COORDINATE_KIND, FRAME_CONVENTION,
                                   build_material_grid, calibration_declarations,
                                   compact_frame_samples, image_space_diagnostics,
                                   render_reference, sample_pose)
 from .calibration_scan import ScanPose, build_scan_poses
+from .backend_layout import CONFIG_DIR, lut_result_dir
 from .config import load_config
+from .surface_coordinates import normal_direction, require_flat
+from .geometry import LIGHT_GEOMETRY_MODEL
 from .normal_mapping import (NormalCalibration, UPSTREAM_COMMIT,
                              build_normal_lut, lookup_slopes_raw,
                              slopes_to_normals)
@@ -39,6 +43,8 @@ class CalibrationSettings:
     color_distance_threshold: float
     normal_angle_threshold_degrees: float
     export_ambiguity_pairs: bool
+    ambiguity_stride: int = 100
+    branch_dominance_fraction: float = .8
 
 
 class CalibrationValidationFailed(ValueError):
@@ -59,12 +65,12 @@ def parse_calibration_settings(config: dict, config_path: Path,
     raw = config.get('calibration')
     if not isinstance(raw, dict):
         raise ValueError('Configuration requires a calibration object')
-    required = ('sphere_radius_mm', 'scan', 'material_grid', 'sampling',
-                'lut', 'validation', 'visualization')
-    if any(not isinstance(raw.get(key), dict) for key in required[1:]) \
-            or 'sphere_radius_mm' not in raw:
+    required = ('scan', 'material_grid', 'sampling', 'lut', 'validation',
+                'visualization')
+    if any(not isinstance(raw.get(key), dict) for key in required):
         raise ValueError('Calibration configuration is incomplete')
-    radius = _finite_positive(raw['sphere_radius_mm'], 'calibration.sphere_radius_mm')
+    radius = _finite_positive(config['indentation']['radius_mm'],
+                              'indentation.radius_mm')
     scan = raw['scan']
     for key in ('depth_min_mm', 'depth_max_mm', 'depth_step_mm'):
         _finite_positive(scan.get(key), f'calibration.scan.{key}')
@@ -116,16 +122,26 @@ def parse_calibration_settings(config: dict, config_path: Path,
     normal_angle = float(visualization.get('normal_angle_threshold_degrees', 20))
     if not np.isfinite(normal_angle) or not 0 <= normal_angle <= 180:
         raise ValueError('normal_angle_threshold_degrees must be in [0,180]')
+    ambiguity_stride = visualization.get('ambiguity_stride', 100)
+    if type(ambiguity_stride) is not int or ambiguity_stride < 1:
+        raise ValueError('ambiguity_stride must be an integer >= 1')
+    dominance = visualization.get('branch_dominance_fraction', .8)
+    if isinstance(dominance, bool) or not np.isscalar(dominance) \
+            or not np.isfinite(dominance) or not .5 < dominance <= 1:
+        raise ValueError('branch_dominance_fraction must be finite and in (0.5,1]')
     if output_override is not None:
         output = output_override.expanduser().resolve()
     else:
-        configured = Path(raw.get('output_dir', 'results_lut')).expanduser()
-        output = (config_path.parent / configured).resolve() if not configured.is_absolute() \
-            else configured.resolve()
+        if 'output_dir' in raw:
+            configured = Path(raw['output_dir']).expanduser()
+            output = (config_path.parent / configured).resolve() if not configured.is_absolute() \
+                else configured.resolve()
+        else:
+            output = lut_result_dir(config.get('backend', 'analytic'))
     return CalibrationSettings(output, lut_size, maximum_rms, fraction,
                                validation_rms, maximum_out, minimum_samples,
                                difference_gain, enabled, color_distance,
-                               normal_angle, export_pairs)
+                               normal_angle, export_pairs, ambiguity_stride, float(dominance))
 
 
 def _atomic_json(path: Path, value: dict) -> None:
@@ -157,8 +173,16 @@ def _json_value(value):
 
 
 def _config_signature(config: dict) -> str:
+    if config.get('backend') in ('xense', 'mujoco'):
+        from .mujoco_backend import simulation_signature
+        return simulation_signature(config)
     value = copy.deepcopy(config)
     value.get('calibration', {}).pop('output_dir', None)
+    # Post-render evaluation settings must not invalidate reusable render samples.
+    value.get('calibration', {}).pop('norm_diff', None)
+    # Identical JSON has different optics after the emitting-plane convention
+    # changes. Never reconstruct old residuals with a new-geometry reference.
+    value = {'light_geometry_model': LIGHT_GEOMETRY_MODEL, 'config': value}
     canonical = json.dumps(value, sort_keys=True, separators=(',', ':'),
                            ensure_ascii=False).encode('utf-8')
     return hashlib.sha256(canonical).hexdigest()
@@ -188,8 +212,10 @@ def _circle_pixels(context, frame, radius: float, *, use_surface_height: bool):
 
 
 def save_verification_preview(context, reference, frame, path: Path,
-                              settings: CalibrationSettings, status: str) -> None:
-    residual, _, valid, _ = image_space_diagnostics(context, reference, frame)
+                              settings: CalibrationSettings, status: str,
+                              diagnostics=None) -> None:
+    residual, _, valid, _ = (diagnostics if diagnostics is not None else
+                            image_space_diagnostics(context, reference, frame))
     difference = residual.detach().cpu().numpy()
     validity = valid.detach().cpu().numpy()
     rgb = np.rint(255 * np.clip(.5 + settings.difference_gain * difference, 0, 1)).astype(np.uint8)
@@ -231,7 +257,8 @@ def _write_report(path: Path, rows: list[dict]) -> None:
 
 
 def _save_samples(path: Path, pieces: list[dict], keys: list[str], pose_ids: list[int],
-                  grid, metadata: dict) -> dict[str, np.ndarray]:
+                  grid, metadata: dict, *, reference_grid_color: np.ndarray | None = None,
+                  reference_grid_valid: np.ndarray | None = None) -> dict[str, np.ndarray]:
     if not pieces:
         raise ValueError('No calibration pose supplied valid samples')
     fields = ('color_residual_samples', 'slope_samples', 'material_coordinates',
@@ -257,6 +284,20 @@ def _save_samples(path: Path, pieces: list[dict], keys: list[str], pose_ids: lis
     values['reference_image'] = np.asarray(
         'analytic_reference:' + metadata['run_signature'])
     values['reference_storage'] = np.asarray('rendered_once_in_memory')
+    if reference_grid_color is not None:
+        if reference_grid_valid is None or reference_grid_color.shape != (*grid.shape, 3) \
+                or reference_grid_valid.shape != grid.shape:
+            raise ValueError('Invalid archived reference grid dimensions')
+        values['format_version'] = np.asarray(2, np.int32)
+        values['reference_grid_color'] = np.asarray(reference_grid_color, np.float64)
+        values['reference_grid_valid'] = np.asarray(reference_grid_valid, bool)
+        values['reference_storage'] = np.asarray('archived_material_grid')
+        source = ('xensim_zero_depth' if metadata['backend'] in ('xense', 'mujoco')
+                  else 'zemax_zero_depth')
+        values['reference_image'] = np.asarray(source + ':' + metadata['run_signature'])
+        values['observation_model_id'] = np.asarray(metadata['observation_model_id'])
+        values['backend'] = np.asarray(metadata['backend'])
+        values['image_encoding'] = np.asarray(metadata['image_encoding'])
     values['sphere_radius_mm'] = np.asarray(metadata['sphere_radius_mm'], np.float64)
     values['sphere_side'] = np.asarray(metadata['sphere_side'])
     values['boundary_model'] = np.asarray('zero_boundary_displacement')
@@ -270,7 +311,9 @@ def _angle_errors(predicted: np.ndarray, truth: np.ndarray) -> np.ndarray:
 
 
 def fit_and_validate(samples: dict[str, np.ndarray], settings: CalibrationSettings,
-                     output_dir: Path, metadata: dict):
+                     output_dir: Path, metadata: dict, *,
+                     pose_split: dict[str, list[str]] | None = None,
+                     required_pose_keys: list[str] | None = None):
     colors = np.asarray(samples['color_residual_samples'], np.float32)
     slopes = np.asarray(samples['slope_samples'], np.float32)
     image_index = np.asarray(samples['image_index'])
@@ -278,11 +321,26 @@ def fit_and_validate(samples: dict[str, np.ndarray], settings: CalibrationSettin
     active = sorted(set(image_index.tolist()), key=lambda index: keys[index])
     if len(active) < 2:
         raise ValueError('Whole-image validation requires at least two accepted poses')
-    shuffled = np.asarray(active)
-    np.random.default_rng(42).shuffle(shuffled)
-    count = min(len(active) - 1,
-                max(1, math.ceil(settings.validation_fraction * len(active))))
-    held_out = shuffled[:count]
+    if pose_split is None:
+        shuffled = np.asarray(active)
+        np.random.default_rng(42).shuffle(shuffled)
+        count = min(len(active) - 1,
+                    max(1, math.ceil(settings.validation_fraction * len(active))))
+        held_out = shuffled[:count]
+    else:
+        training = list(pose_split['training_images'])
+        validation = list(pose_split['validation_images'])
+        expected = set(required_pose_keys if required_pose_keys is not None else keys[active])
+        if (not training or not validation or len(training) != len(set(training))
+                or len(validation) != len(set(validation)) or set(training) & set(validation)
+                or (set(training) | set(validation)) != expected):
+            raise ValueError('Fixed pose split must be disjoint and cover the required poses exactly')
+        held_out = np.asarray([i for i in active if keys[i] in set(validation)], dtype=int)
+        train_indices = np.asarray([i for i in active if keys[i] in set(training)], dtype=int)
+        if not len(held_out) or not len(train_indices):
+            raise ValueError('Fixed pose split has no accepted training or validation poses')
+        shuffled = np.r_[held_out, train_indices]
+        count = len(held_out)
     validation_mask = np.isin(image_index, held_out)
     training_mask = ~validation_mask
     options = dict(size=settings.lut_size,
@@ -321,9 +379,11 @@ def fit_and_validate(samples: dict[str, np.ndarray], settings: CalibrationSettin
             'passed': (rms <= settings.validation_rms_degrees
                        and fraction <= settings.maximum_out_of_range_fraction),
         })
-    passed = all(row['passed'] for row in image_rows)
+    missing = sorted(set(required_pose_keys or []) - set(keys[active]))
+    passed = not missing and all(row['passed'] for row in image_rows)
     report = {
         'status': 'passed' if passed else 'failed',
+        'missing_required_poses': missing,
         'training_images': common['training_images'],
         'validation_images': common['validation_images'],
         'images': image_rows,
@@ -377,9 +437,11 @@ def _dry_run_summary(config: dict, poses: list[ScanPose], grid, settings) -> dic
     pixels = int(config['camera']['width_px'] * config['camera']['height_px'])
     return {
         'status': 'dry-run',
+        'backend': config.get('backend', 'analytic'),
         'pose_count': len(poses),
         'render_count_sampling_pass': len(poses) + 1,
-        'render_count_with_visualization': 2 * len(poses) + 1,
+        'render_count_with_visualization': len(poses) + 1,
+        'visualization_render_count': 0,
         'material_grid_shape': list(grid.shape),
         'material_grid_points': int(np.prod(grid.shape)),
         'image_pixels': pixels,
@@ -390,18 +452,42 @@ def _dry_run_summary(config: dict, poses: list[ScanPose], grid, settings) -> dic
     }
 
 
+def load_calibration_config(config_path: str | Path,
+                            calibration_config_path: str | Path | None = None) -> dict:
+    """Combine one simulator's physics with independently configured LUT workflow."""
+    simulation = load_config(config_path)
+    if 'calibration' in simulation and calibration_config_path is None:
+        return simulation  # Historical full configuration compatibility.
+    source = Path(calibration_config_path or CONFIG_DIR / 'calibration.json').expanduser().resolve()
+    document = json.loads(source.read_text(encoding='utf-8'))
+    if not isinstance(document, dict) or set(document) != {'format_version', 'calibration'} \
+            or document['format_version'] != 1 or not isinstance(document['calibration'], dict):
+        raise ValueError(f'Invalid LUT calibration configuration: {source}')
+    if 'calibration' in simulation:
+        raise ValueError(f'Simulation config must not embed calibration when using {source}')
+    return dict(simulation, calibration=copy.deepcopy(document['calibration']))
+
+
 def _run_calibration(config_path: str | Path, output_override: str | Path | None = None,
-                     *, dry_run: bool = False) -> dict:
+                     *, dry_run: bool = False,
+                     calibration_config_path: str | Path | None = None) -> dict:
     config_path = Path(config_path).expanduser().resolve()
-    config = load_config(config_path)
+    config = load_calibration_config(config_path, calibration_config_path)
     settings = parse_calibration_settings(
         config, config_path, Path(output_override) if output_override is not None else None)
+    if config.get('backend') in ('xense', 'mujoco'):
+        from .mujoco_calibration import run_mujoco_calibration
+        return run_mujoco_calibration(config, config_path, settings, dry_run=dry_run)
     poses = build_scan_poses(config)
     grid = build_material_grid(config)
     summary = _dry_run_summary(config, poses, grid, settings)
     if dry_run:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
         return summary
+    if config.get('backend') == 'zemax':
+        from .zemax_calibration import run_zemax_calibration
+
+        return run_zemax_calibration(config, settings, poses, grid)
     if not str(config['render'].get('device', 'cuda:0')).startswith('cuda'):
         raise ValueError('Full calibration requires render.device to be a CUDA device')
     _ensure_new_output(settings.output_dir)
@@ -410,13 +496,14 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
     import torch
     run_signature = _config_signature(config)
     metadata = dict(calibration_kind='simulated_sphere_scan',
+                    light_geometry_model=LIGHT_GEOMETRY_MODEL,
                     upstream_commit=UPSTREAM_COMMIT,
                     run_signature=run_signature,
                     simulation_config_signature=run_signature,
-                    sphere_radius_mm=float(config['calibration']['sphere_radius_mm']),
-                    sphere_direction_z=int(config['indentation']['direction_z']),
+                    sphere_radius_mm=float(config['indentation']['radius_mm']),
+                    sphere_direction_z=int(normal_direction(config)),
                     sphere_side=('positive_normal'
-                                 if config['indentation']['direction_z'] == -1
+                                 if normal_direction(config) == -1
                                  else 'negative_normal'),
                     boundary_model='zero_boundary_displacement',
                     scan=copy.deepcopy(config['calibration']['scan']),
@@ -432,7 +519,10 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
     manifest = {
         'format_version': 1,
         'status': 'running',
+        'run_status': 'running',
+        'stage': 'sampling',
         'run_signature': run_signature,
+        'light_geometry_model': LIGHT_GEOMETRY_MODEL,
         'config_path': str(config_path),
         'config': config,
         'reference': {'storage': 'rendered_once_in_memory', 'depth_mm': 0.0},
@@ -466,7 +556,9 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
             rejected_reason = '' if status == 'accepted' \
                 else f'{frame.sample_count} < {settings.minimum_samples_per_pose}'
             preview = settings.output_dir / 'verification' / f'{pose.image_key}.png'
-            save_verification_preview(context, reference, frame, preview, settings, status)
+            diagnostics = image_space_diagnostics(context, reference, frame)
+            save_verification_preview(context, reference, frame, preview, settings, status,
+                                      diagnostics=diagnostics)
             preview_seconds = time.perf_counter() - start_preview
             if status == 'accepted':
                 pieces.append(compact)
@@ -504,27 +596,39 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
                                material_grid_shape=list(grid.shape))
         samples = _save_samples(settings.output_dir / 'normal_samples.npz', pieces,
                                 accepted_keys, accepted_pose_ids, grid, sample_metadata)
+        save_ambiguity_inputs(settings.output_dir / 'ambiguity_inputs.npz', samples,
+                              settings.output_dir / 'normal_samples.npz')
         _write_report(settings.output_dir / 'verification' / 'report.csv', rows)
+        # Persist sampling progress before fitting or potentially lengthy diagnostics.
+        manifest['stage'] = 'fit_and_validate'
+        manifest['artifacts'].update(samples='normal_samples.npz',
+                                      ambiguity_inputs='ambiguity_inputs.npz')
+        _atomic_json(settings.output_dir / 'manifest.json', manifest)
         report, training_lut, final_lut, diagnostic = fit_and_validate(
             samples, settings, settings.output_dir, sample_metadata)
 
         visualization_path = None
         visualization_error = None
         if settings.visualization_enabled and final_lut is not None:
+            manifest['stage'] = 'visualization'
+            manifest['validation'] = report
+            _atomic_json(settings.output_dir / 'manifest.json', manifest)
             try:
                 from .calibration_visualization import generate_calibration_visualizations
                 visualization_path = generate_calibration_visualizations(
-                    context, reference, grid, poses, rows, samples, final_lut,
-                    training_lut, settings, settings.output_dir / 'visualization')
+                    samples, final_lut, training_lut, settings,
+                    settings.output_dir / 'visualization')
             except Exception as exc:
                 visualization_error = f'{type(exc).__name__}: {exc}'
 
     total_seconds = time.perf_counter() - start_total
     manifest['status'] = report['status']
     manifest['run_status'] = 'completed'
+    manifest['stage'] = 'completed'
     manifest['validation'] = report
     manifest['artifacts'] = {
         'samples': 'normal_samples.npz',
+        'ambiguity_inputs': 'ambiguity_inputs.npz',
         'training_lut': 'normal_lut_train.npz',
         'formal_lut': 'normal_lut.npz' if report['status'] == 'passed' else None,
         'diagnostic_lut': diagnostic.name if diagnostic else None,
@@ -533,6 +637,7 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
         'visualization': (str(visualization_path.relative_to(settings.output_dir))
                           if visualization_path else None),
     }
+    compilation = context.compile_metrics()
     manifest['performance'] = {
         'reference_seconds': reference_seconds,
         'sampling_pose_median_seconds': float(np.median(
@@ -549,6 +654,26 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
         'effective_pixel_chunk_size': context.pixel_chunk_size,
         'effective_light_chunk_size': context.light_chunk_size,
         'cuda_oom_retries': context.oom_retry_count,
+        'cuda_graphs_requested': context.cuda_graphs,
+        'cuda_graph_capture_count': context.cuda_graph_capture_count,
+        'cuda_graph_replay_count': context.cuda_graph_replay_count,
+        'cuda_graph_fallback_reason': context.cuda_graph_fallback_reason,
+        'compile_lighting_requested': compilation['requested'],
+        'compile_lighting_effective': compilation['effective'],
+        'compile_backend': compilation['backend'],
+        'compile_region': compilation['region'],
+        'compile_options': compilation['options'],
+        'compile_versions': compilation['versions'],
+        'compile_variant_count': compilation['variant_count'],
+        'compile_first_call_seconds': compilation['first_call_seconds'],
+        'compile_prepare_seconds': compilation['prepare_seconds'],
+        'compile_warmup_seconds': compilation['warmup_seconds'],
+        'compile_graph_capture_seconds': compilation['graph_capture_seconds'],
+        'compile_fallback_reason': compilation['fallback_reason'],
+        'compile_failure_stage': compilation['failure_stage'],
+        'compile_validation_status': compilation['validation_status'],
+        'sampling_render_count': len(poses) + 1,
+        'visualization_render_count': 0,
         'torch_version': torch.__version__,
         'cuda_version': torch.version.cuda,
     }
@@ -566,20 +691,24 @@ def _run_calibration(config_path: str | Path, output_override: str | Path | None
 
 
 def run_calibration(config_path: str | Path, output_override: str | Path | None = None,
-                    *, dry_run: bool = False) -> dict:
+                    *, dry_run: bool = False,
+                    calibration_config_path: str | Path | None = None) -> dict:
     """Run calibration and make any post-creation failure explicit in manifest."""
     try:
-        return _run_calibration(config_path, output_override, dry_run=dry_run)
+        return _run_calibration(config_path, output_override, dry_run=dry_run,
+                                calibration_config_path=calibration_config_path)
     except Exception as exc:
         if not dry_run:
             try:
                 resolved_config = Path(config_path).expanduser().resolve()
-                config = load_config(resolved_config)
+                config = load_calibration_config(resolved_config, calibration_config_path)
                 settings = parse_calibration_settings(
                     config, resolved_config,
                     Path(output_override) if output_override is not None else None)
                 manifest_path = settings.output_dir / 'manifest.json'
-                if manifest_path.exists():
+                # MuJoCo owns resumable checkpoints. In particular, a rejected
+                # incompatible resume must not rewrite the previous manifest.
+                if manifest_path.exists() and config.get('backend') not in ('xense', 'mujoco'):
                     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
                     if manifest.get('status') == 'running':
                         manifest['status'] = 'failed'

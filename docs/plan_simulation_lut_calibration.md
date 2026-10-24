@@ -1,6 +1,8 @@
 # 仿真 LUT 标定实现计划
 
-本文是后续实现规格，当前任务仅新增本计划，不实施 GPU 改造或标定程序。实现者应按本文顺序完成代码、验证和文档更新。
+> Historical design record: commands and config paths below predate the repository refactor. See [the current workflow](repository_workflow.md).
+
+本文记录 LUT 标定实现规格。2026-10-21 流程更新：第一遍保存完整歧义输入，后处理不再重渲染；歧义诊断仅通过显式 stride 控制采样，并加入上游的 branch classification / continuation。移除逐帧 color_difference / pq_mapping 输出及其显示缓存。具体命令见 `simulation_lut_calibration_usage.md`。
 
 ## 1. 目标、范围与必须遵守的约定
 
@@ -46,7 +48,8 @@
 | `NormalCalibration.save/load` | LUT NPZ 数据格式及校验 | 保留版本 5 及核心字段 |
 | `lookup_slopes_raw` | LUT 三线性插值、混合方差和置信度 | 原样移植 |
 | `_fit_and_validate_samples` | 整图分组留出验证，通过后用全部样本拟合正式 LUT | 保留划分和判定算法，改为接收仿真样本及内嵌坐标声明 |
-| `calibrate/visualize_norm.py` | 全样本拟合、整图留出、逐帧色差/坡度、LUT 切片、歧义图 | 保留图表及指标，改造输入适配层 |
+| `calibrate/visualize_norm.py` | 全样本拟合、整图留出、LUT 切片、歧义图 | 保留全局图表，删除逐帧色差/坡度输出 |
+| `calibrate/analyze_ambiguities.py` | 外围分支延续及主支持/多分支分类 | 复现 branch classification、branch continuation 图及数学规则 |
 
 源码定位：
 
@@ -80,7 +83,7 @@
 ```text
 calibrate_lut.py                  # 新主入口：参数解析与 main()
 simulate.py                       # 现有入口；analytic 默认走 GPU
-config.example.json              # 统一配置，包含物理、渲染、Zemax 和 LUT 标定参数
+config.json              # 统一配置，包含物理、渲染、Zemax 和 LUT 标定参数
 utils/
   config.py                      # 提取共享配置读取/校验
   geometry.py                    # 保留 CPU 几何参考与 STL 导出
@@ -90,6 +93,9 @@ utils/
   renderer_gpu.py                # 全 GPU analytic 渲染与可复用上下文
   calibration_scan.py            # 深度、x/y 轴、稳定姿态编号
   calibration_samples.py         # 材料网格、几何标签、配对色差
+  calibration_ambiguity.py       # 完整输入保存、stride 采样和独立歧义分析
+  ambiguity_patterns.py          # 外围支持计数、分类、半径敏感性和两类分支图
+  ambiguity_patterns_compiled.py # Numba 精确树遍历与支持图像位集合
   calibration_pipeline.py        # reference/采样/拟合/验证/发布调度
   normal_mapping.py              # 上游 LUT 核心、NPZ 保存/读取/插值
   calibration_visualization.py   # 上游图表与仿真数据适配
@@ -112,7 +118,7 @@ docs/
 
 ### 4.1 配置示例
 
-`config.example.json` 是仿真和 LUT 标定共用的完整配置，包含 `surface/indentation/lights/camera/render/zemax/calibration` 段。下方是其中的 `calibration` 部分：
+`config.json` 是仿真和 LUT 标定共用的完整配置，包含 `surface/indentation/lights/camera/render/zemax/calibration` 段。下方是其中的 `render/calibration` 部分：
 
 ```json
 {
@@ -123,12 +129,13 @@ docs/
     "device": "cuda:0",
     "geometry_dtype": "float64",
     "radiometry_dtype": "float32",
-    "pixel_chunk_size": 8192,
-    "light_chunk_size": 16
+    "pixel_chunk_size": 16384,
+    "light_chunk_size": 16,
+    "cuda_graphs": true,
+    "compile_lighting": "auto"
   },
   "calibration": {
     "output_dir": "results_lut",
-    "sphere_radius_mm": 6.0,
     "scan": {
       "xy_step_mm": [2.0, 2.0],
       "depth_min_mm": 0.2,
@@ -158,6 +165,8 @@ docs/
       "difference_gain": 2.0,
       "color_distance_threshold": 0.01,
       "normal_angle_threshold_degrees": 20.0,
+      "ambiguity_stride": 5,
+      "branch_dominance_fraction": 0.8,
       "export_ambiguity_pairs": false
     }
   }
@@ -166,7 +175,7 @@ docs/
 
 规则：
 
-- 标定球半径唯一来源是 `calibration.sphere_radius_mm`；每个扫描姿态覆盖物理配置中的 `indentation.radius_mm/center_xy_mm/depth_mm`。
+- 标定球半径唯一来源是 `indentation.radius_mm`；每个扫描姿态只覆盖 `indentation.center_xy_mm/depth_mm`。
 - `indentation.direction_z` 沿用物理配置；它和 `surface.view_side_z` 是不同概念。
 - 标定入口仅支持 analytic；不能把 `--backend zemax` 作为可选加速方式。
 - `xy_step_mm`、材料网格间距和 GPU 分块是不同参数，不能复用一个变量。
@@ -182,19 +191,19 @@ docs/
 
 ```powershell
 # 仅生成扫描列表与资源估计；不渲染、不拟合、不写图。
-uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.example.json --dry-run
+uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.json --dry-run
 
 # 完整标定。默认执行采样、整图验证、全样本拟合和可视化。
-uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.example.json --out results_lut
+uv run --cache-dir .uv-cache --extra gpu --extra calibration --extra gpu-compile python calibrate_lut.py --config config.json --out results_lut
 
 # 原入口继续支持，analytic 默认使用 GPU。
-uv run --cache-dir .uv-cache --extra gpu python simulate.py --config config.example.json --backend analytic --out results_gpu
+uv run --cache-dir .uv-cache --extra gpu python simulate.py --config config.json --backend analytic --out results_gpu
 
 # CPU 仅作显式对照或开发验证。
-uv run --cache-dir .uv-cache python simulate.py --config config.example.json --backend analytic --device cpu --out results_cpu
+uv run --cache-dir .uv-cache python simulate.py --config config.json --backend analytic --device cpu --out results_cpu
 ```
 
-新入口参数只需 `--config`、`--out`、`--dry-run`。一般渲染入口新增 `--device` 覆盖配置。标定入口若没有可用 CUDA，明确失败；不回退到 CPU 跑完整扫描。
+完整标定使用 `--config`、`--out`、`--dry-run`。独立离线诊断使用 `--ambiguity-only`，可选 `--samples` 指定已有 normal_samples 或 ambiguity_inputs 文件，`--ambiguity-stride` 覆盖诊断采样设置；此模式无需 CUDA、不会拟合 LUT。一般渲染入口使用 `--device` 覆盖配置。完整标定若没有可用 CUDA，明确失败。
 
 ## 5. 扫描几何与可重复顺序
 
@@ -468,7 +477,7 @@ sensor = L_per_m2 * (2*pinhole_half_width_mm)^2/focal_length_mm^2 * cos_view^4
 - 保留现有 `1e-6 mm` 自遮挡偏移和 `1e-5 mm` 可见性比较；不要直接在 float32 大世界坐标上使用这些值，舍入可能让偏移失效并造成自阴影。
 - 先做纯 float64 GPU 对照，再启用上述几何/辐射混合精度。禁用 autograd 与半精度 autocast；不引入 FP16/BF16，不允许未经误差核验的 TF32 快捷计算。[数值精度注意事项](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)
 - 用 `torch.inference_mode()` 包围渲染。Python 循环只控制灯带块/光源块/像素块，单个块内部全部广播计算。
-- 起始 `pixel_chunk_size=8192`、`light_chunk_size=16`；主要中间张量为 `[P,L,3]`，不要构造 `[全部姿态,H,W,全部光源,3]`。
+- 起始 `pixel_chunk_size=16384`、`light_chunk_size=16`，默认启用 `cuda_graphs`；主要中间张量为 `[P,L,3]`，不要构造 `[全部姿态,H,W,全部光源,3]`。扫描复用上下文时，从第二帧开始捕获固定大小光照/阴影块，以设备张量更新球参数；尾块补零、仅复制有效输出。完整实现和复测命令见 [GPU 渲染优化](gpu_renderer_optimization.md)。
 - 固定姿态一次只处理一帧。光源可以合并为点、normal、power、exponent 四组 tensor，仍保留每个 strip 的采样权重。
 - OOM 时释放当前块临时量并将像素块减半，重试当前姿态；到最小可执行块仍失败则报错。不能悄悄降采样光源、降低图像分辨率或退回 CPU。
 - 整个扫描仅初始化一次 CUDA 上下文，缓存固定射线和 reference。不要每帧 `empty_cache()`，不要每个深度重新编译/分配全套常量。
@@ -615,6 +624,7 @@ results_lut/
   normal_lut.npz
   normal_lut_train.npz
   normal_samples.npz
+  ambiguity_inputs.npz           # 完整未采样的歧义输入，在拟合前写入
   manifest.json
   verification/
     report.csv
@@ -628,12 +638,13 @@ results_lut/
     color_pq_mapping.png
     lut_slices.png
     pq_ambiguities.png
-    color_difference/
-      000000.png               # 上游 1×4 色差面板
-      ...
-    pq_mapping/
-      000000.png               # 上游 2×3 坡度面板
-      ...
+    ambiguity_summary.json
+    ambiguity_analysis.npz       # 分析子集、原始索引及端点 mask
+    ambiguity_patterns/
+      analysis.json
+      branch_classification.png
+      branch_continuation.png
+      branch_classification.npz
 ```
 
 manifest 中每个姿态的 `source_image`、`verification_image` 指向**同一个** `verification/<pose_key>.png`，并声明它是诊断色差预览，不能再作为原始 sRGB 输入反读来拟合。LUT 拟合输入只能来自内存采样或 `normal_samples.npz`。
@@ -704,47 +715,45 @@ B(theta)=(cx+a*cos(theta), cy+a*sin(theta), 0)
 | `color_pq_mapping.png` | 两个三维 signed RGB 点云，分别按 raw LUT p、q 着色；最多 6000 个等序抽样点仅用于绘制 |
 | `lut_slices.png` | 2×3：逐一将 R/G/B 色差固定为零后的 p/q 切片；包含补全节点 |
 | `pq_ambiguities.png` | p/q 平面中红色星号标记有歧义的原始样本；q 轴向下、等比例；需要时加中央 `[-2,2]` 视图 |
-| `color_difference/<id>.png` | 1×4：signed 色差合成图与 delta R/G/B 标量图 |
-| `pq_mapping/<id>.png` | 2×3：LUT p、q、模长；几何真值 p、q、法线角误差 |
-| `summary.json` | 支持节点、保留样本数、全样本拟合/held-out 指标、歧义统计、逐图路径 |
+| `ambiguity_patterns/branch_classification.png` | RGB 投影、p/q 分类、外围半径敏感性三面板，与上游同样颜色和轴方向 |
+| `ambiguity_patterns/branch_continuation.png` | RGB 三维和 p/q 支持点、锚点星号，展示两支/一支外围延续 |
+| `summary.json` | 支持节点、保留样本数、全样本拟合/held-out 指标、歧义统计及分支图路径 |
 
 绘图沿用 Matplotlib Agg，不弹交互窗口；缺失区域为黑色。坡度使用对称 `coolwarm`，模长 `viridis`，法线角误差 `magma`；全部姿态共享同一 slope/color limits。
 
-上游 summary 的绘图抽样上限分别是 mapping 点云 `6000`、p/q 散点 `8000`，误差直方图 `50 bins`，保存 DPI `140`。仅绘图可以抽样，数值统计/训练/验证使用全部有效样本。
+上游 summary 的绘图抽样上限分别是 mapping 点云 `6000`、p/q 散点 `8000`，误差直方图 `50 bins`，保存 DPI `140`。训练、留出验证和拟合误差使用全部有效样本；歧义诊断可独立采样，必须声明统计范围。
 
 所有 held-out 图表都必须从 `normal_lut_train.npz` 查询；正式全样本 LUT 的图只能标为 calibration fit，不能标为留出验证结果。p/q 图保持 raw LUT，不套用零色差保护或额外后处理。
 
-逐姿态图表文件名统一使用原扫描 `image_key`，不因中途拒绝姿态而改号；样本的连续 `image_index` 仅用于分组，通过 manifest 映射到该 key。相应调整上游原先按接受列表下标命名文件的部分。
+verification 文件名统一使用原扫描 `image_key`；样本的连续 `image_index` 仅用于分组，通过 manifest 映射到该 key。分支分类 NPZ 的 `source_sample_index` 对应完整输入中的原始样本。
 
-### 12.3 移除 frames/overall 依赖的具体方式
+### 12.3 移除逐帧显示与几何依赖
 
-上游 `_frame_paths()` / `_project_frame()` 从 `frames/` 和 `overall/` 取数据，这两条读取路径不能保留。增加一个仿真 adapter，按 `pose_id` 提供内存结构：
+删除 visualization 中的 color_difference 和 pq_mapping 目录创建、逐帧 LUT 查询、面板绘图、逐图路径记录及显示缓存写入。上游 `_frame_paths()` / `_project_frame()` 的 frames/overall 读取路径均不移植。
 
-```text
-uv_current                [rows,columns,2]
-color_residual_grid        [rows,columns,3]
-photometric_valid_mask     [rows,columns]
-slope_grid                [rows,columns,2]
-sample_valid_mask         [rows,columns]
-reference_normals / tangent_frames（可广播常量）
-image_shape, image_key, pose, coordinate declarations
-```
-
-拟合结束后，按扫描顺序**第二遍**在 GPU 重渲染接受姿态，复用仍在显存的 reference，临时生成上述数组并立即绘图、释放，不写逐帧中间数组。
-
-使用 `material_grid_index` 对第二遍重新计算的颜色/坡度与原始配对样本逐点核验；同设备/同分块/同精度应可重现。如存在浮点末位差异，应使用已验证的明确 atol/rtol 并记录，不能忽略系统性差异。
-
-将 `_project_frame` 改成接收 adapter 数据；展示光栅化可复用上游 `rasterize_surface_grid`，它属于 CPU 诊断绘图，不参与 GPU 物理渲染。保留可用颜色域的 LUT p/q 展示，但真值/角误差只在配对球面样本上绘制。
-
-这一次额外渲染是去除大体积逐帧缓存的明确代价，性能报告分别记录采样 pass 和 visualization pass。不要为了省第二遍而在磁盘重建 `frames/*.npz`。
+全部全局图和分支图只使用第一遍的配对 RGB、坡度、image_index、image_paths；不需要 image-space residual、逐帧 UV 或几何缓存。verification 中带接触圈线的单图继续在第一遍生成。总渲染次数固定为 `1 + pose_count`，`visualization_render_count=0`。
 
 ### 12.4 歧义统计必须可扩展且不改变定义
 
 歧义定义沿用上游 `find_ambiguous_color_pairs()`：任意无序对 `i<j`，signed linear RGB 欧氏距离 `<=0.01`，且两个 `normalize((-p,-q,1))` 的夹角严格 `>20°`。同图与跨图都计入，两个端点都标为 ambiguous，使用 MAD 之前的原始配对样本。
 
-小数据可直接用上游 `cKDTree.query_pairs()`。扫描样本较大时，不能一次物化全部近邻对；用同一精确 KDTree 按点/小块 `query_ball_point` 枚举，只取 `j>i`，分块计算角度并累计计数和 ambiguous bool 数组。`eps=0`，不得近似查询或随机抽取样本冒充完整统计。
+第一遍扫描完成、拟合之前，将全部原始色差、坡度、image_index、image_paths、运行签名及元数据写入 `ambiguity_inputs.npz`。所有输入文件保留完整原始数据；stride 不应用于保存、训练或留出验证。
 
-默认 `export_ambiguity_pairs=false`，保留同样的 PNG、歧义定义及完整计数，在 `summary.json` 声明未导出巨大的原始 pair 数组；这是输出精简，不改变可视化判断。若显式为 true，再分块保存上游 `ambiguities.npz` 对应的 pairs/distances/angles 等明细，并在报告中引用。全量 pair 归档不属于必需的 LUT 交付。
+分析时对每个姿态按有效样本顺序取 `0,stride,2*stride,...`，当前示例 stride=5；省略配置字段时回退到 100。保留所有选中的点，不设置总样本数上限、不进行二次抽样；stride=1 恢复完整统计。报告记录采样方法 `per_image_stride`、原始/分析样本数、姿态覆盖、保留比例及 `count_scope`；采样结果仅是所选集合内的精确计数，不得冒充全量结果或直接放大推算。
+
+对选定集合使用精确 KD-tree，`eps=0`，仅枚举 `j>i`，统计同图/跨图、pairs 及两端 mask。查询批大小随分析点数调整，使一批最坏情况下约不超过 262144 个邻域项（单行例外）；每约 5 秒输出进度。默认不导出 pair 明细，仅保存分析子集、原始样本索引、mask、报告和 PNG。显式开启 export 时，pair 索引对应分析子集，原始索引由 `ambiguity_analysis.npz` 中的 `source_sample_index` 映射。
+
+### 12.5 branch classification 与 continuation
+
+按固定提交 `calibrate/analyze_ambiguities.py` 的外围支持规则，对每个冲突对在 RGB 中点的 `2r/3r/4r` 球内查询；严格排除任意一个原始 r 球内的点及锚点。分别统计与两个锚点法线夹角 `<= angle_threshold/2` 的支持点、不同来源图数和其他图支持数。不设置最小内圈/外圈样本数。
+
+主分类使用 `3r`。支持总数为零标 no_outer_support；某支支持数占总数至少 `branch_dominance_fraction=0.8` 标 main_support；其余标 multiple_branches。点级使用所有冲突对的最大类别编码，多分支重叠优先，唯一端点只计一次。报告保留不同半径稳定性、0.7/0.8/0.9 阈值敏感性、点角色和按图数计数的分歧；不删除训练样本。
+
+优化只能改变执行顺序：按锚点复用颜色/法线候选，利用六维包围盒保证不漏掉真实候选，再严格做颜色欧氏距离和角度检查；对每个伙伴分块计算外围球和两个内圈排除。所有冲突对均处理，不再次抽样。冲突对、支持计数暂存磁盘映射数组，结束后清除；图和点级 NPZ/JSON 保留。
+
+大规模集合使用 Numba 的并行精确树遍历，树节点保存颜色/法线包围盒和来源图像位集合。节点全部满足外圈、法线锥且在两个内圈之外时，直接累加节点点数并合并位集合；无法整体判定的节点继续下降，叶节点精确检查。边界剪枝保留浮点余量，最终逐点门槛不改变。不启用 fastmath；支持点数和唯一图数必须与上游 compare_branch_context 完全一致。Numba 随 calibration extra 安装并锁定。
+
+两张图沿用上游版式、颜色、q 轴向下和 DPI=160。continuation 优先选择两端内圈各两点的上游实例；不存在时使用有支撑的稠密实例，并展示真实内圈计数。完全没有支持实例时仍生成说明图。
 
 ## 13. 主流程伪代码与函数边界
 
@@ -777,6 +786,7 @@ def run_calibration(config_path, output_override=None, dry_run=False):
 
     samples = compact_samples.finalize_in_scan_order()
     save_normal_samples_and_manifest(samples, rows, cfg, settings)
+    save_complete_ambiguity_inputs(samples)
     train_ids, validation_ids = upstream_group_split(samples, seed=42)
     training_lut = build_normal_lut(training_samples(samples, train_ids))
     save_training_lut(training_lut)
@@ -792,12 +802,7 @@ def run_calibration(config_path, output_override=None, dry_run=False):
 
     if settings.visualization.enabled and final_lut is not None:
         save_global_visualization_figures(samples, final_lut, training_lut)
-        for accepted_pose in accepted_poses(rows):
-            # 重算临时显示数据，禁止落盘逐帧几何缓存。
-            frame = simulation_visualization_adapter(
-                context, reference, accepted_pose, samples)
-            save_upstream_style_frame_figures(frame, final_lut, report)
-            release_pose_temporaries()
+        save_branch_classification_and_continuation(samples)
 
     finalize_manifest_status_and_timings()
     if not report.passed:
@@ -815,7 +820,8 @@ def run_calibration(config_path, output_override=None, dry_run=False):
 | `make_material_color_and_slope_samples` | reference/current、pose/grid | 全网格临时色差、标签、valid 与紧凑样本 |
 | `build_normal_lut` | CPU colors/slopes、上游两个超参 | `NormalCalibration` |
 | `validate_whole_images` | train LUT、sample groups | 原始 held-out 查询结果与逐图报告 |
-| `simulation_visualization_adapter` | context/reference/pose/samples | 第 12.3 节显示结构 |
+| `compute_branch_support` | 配对颜色/法线/来源、全部冲突对、外围半径 | 与上游精确一致的外围支持与来源图计数 |
+| `run_ambiguity_analysis` | 第一遍样本文件、stride、阈值、输出目录 | 独立报告/NPZ/PNG，渲染次数 0 |
 
 错误必须带可定位原因：无 CUDA、球冠放不下、投影不可见、饱和/有效性导致无样本、颜色通道零跨度、无有效 LUT 节点、验证未通过、可视化失败。不要 catch 全部异常后仍返回成功。
 
@@ -883,13 +889,14 @@ def run_calibration(config_path, output_override=None, dry_run=False):
 - 每个 `source_image` 与 `verification_image` 路径相同，没有 reference/raw observation 的重复 PNG。
 - 输出目录不含 `frames/overall/prepared`、STL、逐帧 GT NPZ 或 irradiance NPY。
 - 圈线按投影真实边界绘制；测试一个斜相机，不能仍画固定半径图像圆。
-- visualization 在没有任何整体曲面文件的情况下独立完成；adapter 第二遍数据与原样本对应。
+- visualization 在没有任何整体曲面文件的情况下独立完成；实际渲染调用次数仅为姿态数加一，不产生逐帧显示目录及诊断缓存。
+- branch 支持计数逐对逐半径与上游 compare_branch_context 一致，点级重叠优先和 80% 占优边界均有回归测试。
 - 歧义的流式实现与小数据全量 `query_pairs()` 返回的端点 mask、within/cross-image 数量一致。
 - 保存文件均可 `allow_pickle=False` 读取；不存在引用缺失曲面文件的 metadata。
 
 ### 14.7 性能验收
 
-先预热 GPU，再对相同配置至少测多帧，分别记录 reference、单姿态渲染、材料采样、CPU LUT 拟合、CPU 绘图、I/O 和两次扫描的耗时。固定相同分辨率、相同灯带点数和相同阴影配置。
+先预热 GPU，再对相同配置至少测多帧，分别记录 reference、单姿态渲染、材料采样、CPU LUT 拟合、CPU 绘图、缓存 I/O 和单次扫描的耗时。固定相同分辨率、相同灯带点数和相同阴影配置。
 
 报告 CPU/GPU 单帧中位耗时、扫描总耗时及 `torch.cuda.max_memory_allocated()`。要求渲染热路径没有 CPU 数组转换，显存峰值有余量；约 8 GB 设备起始预算不超过总显存的 `70%`，通过分块控制。
 
@@ -907,8 +914,8 @@ GPU 不可用的环境可运行 CPU/LUT/扫描测试，并将 GPU 测试明确 s
 4. **材料配对和解析标签。** 建固定网格，渲染一次 reference 与少量手选姿态；通过斜相机、符号、四邻采样测试，生成第一批紧凑样本。
 5. **采样 pipeline 与精简 writer。** 跑小扫描，输出样本、manifest、report 和单图预览；确认没有通用 `save_result()` 的多余资产。
 6. **整图验证与发布。** 训练 LUT、held-out 图判定、正式全样本 LUT；实现失败不覆盖和元数据一致性。
-7. **可视化移植。** 接入内存 adapter 和第二遍流式渲染，保留上游各图版式和 raw LUT 口径，完成精确歧义统计。
-8. **性能与完整扫描。** 在实际 CUDA 设备测基线、显存、两个 pass 耗时，再跑默认或用户指定完整扫描；如颜色→坡度存在空间歧义导致失败，如实报告，不放宽门限伪造通过。
+7. **可视化移植。** 使用第一遍配对样本生成全局图、分支分类和延续图；独立歧义分析通过确定的 stride 采样，并明确声明统计范围。
+8. **性能与完整扫描。** 在实际 CUDA 设备测基线、显存、一次渲染扫描及缓存读取耗时，再跑默认或用户指定完整扫描；如颜色→坡度存在空间歧义导致失败，如实报告，不放宽门限伪造通过。
 9. **收尾。** 更新 `docs/使用说明.md` 的新入口、配置、CUDA 安装与输出说明，修正其中仍可能存在的旧测试命令；锁定依赖，执行全部适用检查。
 
 实施完成后的验收命令至少包括：
@@ -916,8 +923,8 @@ GPU 不可用的环境可运行 CPU/LUT/扫描测试，并将 GPU 测试明确 s
 ```powershell
 uv sync --cache-dir .uv-cache --locked --extra gpu --extra calibration
 uv run --cache-dir .uv-cache --extra gpu --extra calibration python -m unittest discover -s tests -v
-uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.example.json --dry-run
-uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.example.json --out results_lut
+uv run --cache-dir .uv-cache --extra gpu --extra calibration python calibrate_lut.py --config config.json --dry-run
+uv run --cache-dir .uv-cache --extra gpu --extra calibration --extra gpu-compile python calibrate_lut.py --config config.json --out results_lut
 ```
 
 小规模集成测试使用测试内临时配置覆盖更粗扫描和较低分辨率，不修改正式示例物理参数。正式性能与默认扫描验收仍使用原分辨率及灯带采样参数。

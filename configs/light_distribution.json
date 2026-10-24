@@ -1,0 +1,14 @@
+{
+  "format_version": 1,
+  "light_distribution": {
+    "candidates": [
+      {"name": "gradient_full", "family": "gradient", "strength": 1.0, "short_power_w": 0.4, "long_power_w": 0.4},
+      {"name": "gradient_half", "family": "gradient", "strength": 0.5, "short_power_w": 0.4, "long_power_w": 0.4},
+      {"name": "gradient_full_side3", "family": "gradient", "strength": 1.0, "short_power_w": 0.9, "long_power_w": 0.3},
+      {"name": "complement_side10", "family": "complement", "strength": 0.0, "short_power_w": 1.5, "long_power_w": 0.15},
+      {"name": "complement_side1", "family": "complement", "strength": 0.0, "short_power_w": 0.15, "long_power_w": 0.15},
+      {"name": "complement_side3_half", "family": "complement", "strength": 0.0, "short_power_w": 0.225, "long_power_w": 0.075},
+      {"name": "complement_side3_double", "family": "complement", "strength": 0.0, "short_power_w": 0.9, "long_power_w": 0.3}
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+Xense Simulator SDK – Binary Runtime License (Non-Commercial)
+
+Copyright (c) 2025 [Xense Robotics]. All Rights Reserved.
+
+IMPORTANT: PLEASE READ THIS LICENSE CAREFULLY BEFORE DOWNLOADING, INSTALLING OR USING THE SOFTWARE. BY CLICKING “ACCEPT”, DOWNLOADING, INSTALLING OR USING THE SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD AND AGREED TO BE BOUND BY THIS LICENSE. IF YOU DO NOT AGREE, DO NOT DOWNLOAD, INSTALL OR USE THE SOFTWARE.
+
+1. Definitions
+   1.1 “Software” means the binary runtime libraries (.so, .dll, .pyd) and any accompanying documentation provided by Licensor.
+   1.2 “Licensor” means [Xense Robotics], a company organized under the laws of the People’s Republic of China with its principal place of business in Shanghai.
+   1.3 “You” (or “Your”) means the individual or legal entity exercising the rights granted under this License.
+   1.4 “Commercial Use” means any use that is intended for commercial advantage or monetary compensation, including but not limited to: selling, licensing, renting the Software; providing cloud services, SaaS, or hosting the Software; using the Software in a product or service offered to customers.
+
+2. Grant of Rights
+   Subject to full compliance with this License, Licensor grants You a worldwide, royalty-free, non-transferable, non-exclusive license to:
+   a) download and use the Software solely for non-commercial research, education or personal purposes;
+   b) create and distribute derivative works that **dynamically link** to the Software, provided such derivative works are also offered free of charge and are not used for Commercial Use.
+
+3. Restrictions
+   3.1 **No Commercial Use**. You may not use the Software or any derivative work for Commercial Use.
+   3.2 **No Reverse Engineering**. You may not decompile, disassemble, or otherwise attempt to derive the source code of the Software.
+   3.3 **No Redistribution**. You may not redistribute the original Software package; downstream users must obtain it directly from Licensor.
+   3.4 **No Patent Challenge**. Any patent litigation against Licensor regarding the Software automatically terminates all licenses granted hereunder.
+   3.5 **No Removal of Notices**. You must retain all copyright and license notices in any copy or derivative use.
+
+4. Termination
+   This License automatically terminates upon Your breach of any restriction. Upon termination, You must cease all use and destroy all copies of the Software. Sections 3, 4, 5, 6 and 7 shall survive termination.
+
+5. Governing Law and Jurisdiction
+   This License shall be governed by and construed in accordance with the laws of the People’s Republic of China, without regard to its conflict of laws principles. Any dispute arising out of or in connection with this License shall first be submitted to friendly negotiations. If such negotiations fail, either party may bring an action in the courts located in Shanghai, China, which courts shall have exclusive jurisdiction.
+
+6. Disclaimer of Warranty
+   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. Limitation of Liability
+   IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES, OR DAMAGES FOR LOSS OF PROFITS, REVENUE, DATA OR USE, INCURRED BY YOU OR ANY THIRD PARTY, WHETHER IN AN ACTION IN CONTRACT OR TORT, EVEN IF LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+8. Severability
+   If any provision of this License is held to be invalid or unenforceable under applicable law, it shall be changed and interpreted to accomplish the objectives of such provision to the greatest extent possible under applicable law, and the remaining provisions shall continue in full force and effect.
+
+9. Entire Agreement
+   This License constitutes the entire agreement between You and Licensor regarding the Software and supersedes all prior or contemporaneous understandings, communications or agreements, whether oral or written.
+
+[End of License]

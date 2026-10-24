@@ -10,6 +10,7 @@ import numpy as np
 
 from .calibration_scan import ScanPose, closed_axis
 from .geometry_gpu import height_normal_torch, intersect_surface_torch
+from .surface_coordinates import require_flat
 
 
 COORDINATE_KIND = 'reference_arclength'
@@ -67,6 +68,7 @@ class CalibrationFrame:
 
 
 def build_material_grid(config: dict) -> MaterialGrid:
+    require_flat(config, 'LUT material-grid sampling')
     width, height = map(float, config['surface']['size_mm'])
     step_x, step_y = map(float, config['calibration']['material_grid']['step_xy_mm'])
     if not all(math.isfinite(value) and value > 0 for value in (step_x, step_y)):

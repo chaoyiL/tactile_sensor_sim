@@ -2,6 +2,11 @@
 from pathlib import Path
 import struct
 import numpy as np
+from .surface_coordinates import (center_material_mm, normal_direction,
+                                  analytic_parameter, require_flat, bending_radius)
+
+
+LIGHT_GEOMETRY_MODEL = 'vertical_edge_strips_v1'
 
 
 def unit(v):
@@ -28,13 +33,15 @@ def contact_radius(config):
 
 
 def height_normal(x, y, config):
+    require_flat(config, 'height_normal(x,y)')
     s, b = config['surface'], config['indentation']
     x, y = np.broadcast_arrays(x, y)
-    dx, dy = x - b['center_xy_mm'][0], y - b['center_xy_mm'][1]
+    center = center_material_mm(config)
+    dx, dy = x - center[0], y - center[1]
     rr = dx * dx + dy * dy
     inside = (rr < contact_radius(config) ** 2) & (b['depth_mm'] > 0)
     root = np.sqrt(np.maximum(b['radius_mm'] ** 2 - rr, 1e-16))
-    sign = b['direction_z']
+    sign = normal_direction(config)
     z = np.where(inside, sign * (b['depth_mm'] - b['radius_mm'] + root), 0.)
     hx = np.where(inside, -sign * dx / root, 0.)
     hy = np.where(inside, -sign * dy / root, 0.)
@@ -48,6 +55,9 @@ def intersect_surface(origin, direction, config, t_min=1e-7):
     Supports arbitrary ray origins, including occlusion rays; returns t=inf on miss.
     The small sphere used to prescribe deformation is not an extra optical object.
     """
+    if bending_radius(config) is not None:
+        from .curve_geometry import intersect_curve
+        return intersect_curve(origin, direction, config, t_min=t_min)[0]
     origin, direction = np.broadcast_arrays(np.asarray(origin, float), np.asarray(direction, float))
     s, b = config['surface'], config['indentation']
     w, h = s['size_mm']
@@ -56,12 +66,14 @@ def intersect_surface(origin, direction, config, t_min=1e-7):
         tp = -origin[..., 2] / direction[..., 2]
     tp = np.where(np.isfinite(tp), tp, -1.)
     pp = origin + tp[..., None] * direction
-    radial = (pp[..., 0] - b['center_xy_mm'][0]) ** 2 + (pp[..., 1] - b['center_xy_mm'][1]) ** 2
+    xy = center_material_mm(config)
+    sign = normal_direction(config)
+    radial = (pp[..., 0] - xy[0]) ** 2 + (pp[..., 1] - xy[1]) ** 2
     valid = (tp > t_min) & (radial >= a2 - 1e-10)
     valid &= (np.abs(pp[..., 0]) <= w / 2) & (np.abs(pp[..., 1]) <= h / 2)
     t = np.where(valid, tp, np.inf)
     if b['depth_mm'] > 0:
-        center = np.array([*b['center_xy_mm'], b['direction_z'] * (b['depth_mm'] - b['radius_mm'])])
+        center = np.array([*xy, sign * (b['depth_mm'] - b['radius_mm'])])
         oc = origin - center
         qa = np.sum(direction * direction, -1)
         qb = np.sum(oc * direction, -1)
@@ -72,26 +84,46 @@ def intersect_surface(origin, direction, config, t_min=1e-7):
             ps = origin + ts[..., None] * direction
             rr = (ps[..., 0] - center[0]) ** 2 + (ps[..., 1] - center[1]) ** 2
             good = (disc >= 0) & (ts > t_min) & (rr <= a2 + 1e-10)
-            good &= b['direction_z'] * (ps[..., 2] - center[2]) >= 0
+            good &= sign * (ps[..., 2] - center[2]) >= 0
             good &= (np.abs(ps[..., 0]) <= w / 2) & (np.abs(ps[..., 1]) <= h / 2)
             t = np.minimum(t, np.where(good, ts, np.inf))
     return t
 
 
 def strip_geometry(strip, config):
-    """Offset is from contact-surface edge to strip centerline, towards the outside."""
+    """Fixed inward-facing vertical rectangle beside a contact-surface edge.
+
+    offset_mm is the perpendicular, horizontal edge-to-emitting-plane gap.
+    z_mm is the signed centre height; width_mm runs only along world Z.
+    Moving or resizing a strip never rotates its emitting plane.
+    """
+    require_flat(config, 'Planar strip_geometry')
     w, h = config['surface']['size_mm']
     side, offset, z = strip['side'], strip['offset_mm'], strip['z_mm']
     along = strip.get('along_offset_mm', 0.)
     if side in ('left', 'right'):
-        center = np.array([(-1 if side == 'left' else 1) * (w / 2 + offset), along, z])
+        outward = -1 if side == 'left' else 1
+        center = np.array([outward * (w / 2 + offset), along, z])
         u = np.array([0., 1., 0.])
-    else:
-        center = np.array([along, (-1 if side == 'top' else 1) * (h / 2 + offset), z])
+        normal = np.array([-outward, 0., 0.])
+    elif side in ('top', 'bottom'):
+        outward = -1 if side == 'top' else 1
+        center = np.array([along, outward * (h / 2 + offset), z])
         u = np.array([1., 0., 0.])
-    normal = unit(strip.get('normal_world', -center))
-    # Gram-Schmidt allows an explicitly tilted emission direction.
-    u = unit(u - np.dot(u, normal) * normal)
+        normal = np.array([0., -outward, 0.])
+    else:
+        raise ValueError(f'Unknown light side: {side!r}')
+    # Accept an explicit matching normal for compatibility, but never silently
+    # tilt the source or reintroduce automatic aiming at the world origin.
+    if 'normal_world' in strip:
+        requested = np.asarray(strip['normal_world'], dtype=float)
+        if requested.shape != (3,) or not np.isfinite(requested).all() \
+                or np.linalg.norm(requested) < 1e-12 \
+                or not np.allclose(unit(requested), normal, rtol=0, atol=1e-12):
+            raise ValueError(f'{side} light normal_world must match the fixed inward normal '
+                             f'{normal.tolist()}; tilted emitting planes are not supported')
+    # The sign of v varies by side to preserve a right-handed (u, v, normal)
+    # frame for Zemax. Its physical axis is always world Z.
     v = np.cross(normal, u)
     return center, u, v, normal
 
@@ -109,13 +141,17 @@ def strip_samples(strip, config):
 def export_stl(path, config):
     """Binary open-surface STL, triangle normals point towards the optical side."""
     w, h = config['surface']['size_mm']
-    step = config['zemax']['mesh_step_mm']
+    step = analytic_parameter(config, 'render', 'mesh_step_mm')
     nx, ny = int(np.ceil(w / step)) + 1, int(np.ceil(h / step)) + 1
     if 2 * (nx - 1) * (ny - 1) > 1_500_000:
         raise ValueError('STL mesh is too large; increase mesh_step_mm')
     x, y = np.meshgrid(np.linspace(-w / 2, w / 2, nx), np.linspace(-h / 2, h / 2, ny))
-    z, _ = height_normal(x, y, config)
-    p = np.stack((x, y, z), -1)
+    if bending_radius(config) is not None:
+        from .curve_geometry import deformed_surface
+        p = deformed_surface(x, y, config)[0]
+    else:
+        z, _ = height_normal(x, y, config)
+        p = np.stack((x, y, z), -1)
     p00, p10, p11, p01 = p[:-1, :-1], p[:-1, 1:], p[1:, 1:], p[1:, :-1]
     tris = np.concatenate((np.stack((p00, p10, p11), -2).reshape(-1, 3, 3),
                            np.stack((p00, p11, p01), -2).reshape(-1, 3, 3)))

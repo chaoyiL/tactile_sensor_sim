@@ -4,7 +4,9 @@ from __future__ import annotations
 import numpy as np
 
 from .geometry import (camera_frame, height_normal, intersect_surface,
-                       strip_samples, unit)
+                       unit)
+from .light_distribution import analytic_light_samples
+from .surface_coordinates import bending_radius, analytic_parameter
 
 
 def camera_rays(config):
@@ -18,6 +20,9 @@ def camera_rays(config):
 
 
 def camera_ground_truth(config):
+    if bending_radius(config) is not None:
+        from .curve_geometry import camera_ground_truth_curve
+        return camera_ground_truth_curve(config)
     camera = config['camera']
     rays = camera_rays(config)
     origin = np.asarray(camera['position_mm'])
@@ -42,10 +47,10 @@ def render_cpu(config):
     points, normals = gt['position_mm'][mask], gt['normal_world'][mask]
     irradiance = np.zeros((len(points), 3))
     for strip in config['lights']:
-        samples, emission_normal = strip_samples(strip, config)
-        power = np.asarray(strip['power_rgb_w']) / len(samples)
+        samples, emission_normal, powers = analytic_light_samples(strip, config)
         exponent = strip['cosine_exponent']
-        for light in samples:
+        emission_normals = np.broadcast_to(emission_normal, samples.shape)
+        for light, emission_normal, power in zip(samples, emission_normals, powers):
             vector = light - points
             distance2 = np.sum(vector * vector, -1)
             direction = vector / np.sqrt(distance2)[:, None]
@@ -64,10 +69,10 @@ def render_cpu(config):
                 / np.pi)
     radiance_image = np.zeros((*mask.shape, 3))
     radiance_image[mask] = radiance * 1e6
-    camera, zemax = config['camera'], config['zemax']
+    camera = config['camera']
     rays = camera_rays(config)
     cosine_fourth = (rays @ camera_frame(camera)[:, 2]) ** 4
-    area = (2 * zemax['pinhole_half_width_mm']) ** 2
+    area = (2 * analytic_parameter(config, 'camera', 'pinhole_half_width_mm')) ** 2
     sensor = (radiance_image * (area / camera['focal_length_mm'] ** 2)
               * cosine_fourth[..., None])
     return sensor, radiance_image, gt

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import math
 import os
 from pathlib import Path
 import tempfile
@@ -10,8 +9,7 @@ import time
 
 import numpy as np
 
-from .calibration_samples import (compact_frame_samples,
-                                  image_space_diagnostics, sample_pose)
+from .calibration_ambiguity import _ambiguities, run_ambiguity_analysis
 from .normal_mapping import lookup_slopes_raw, slopes_to_normals
 
 
@@ -171,76 +169,6 @@ def _plot_lut_slices(path: Path, calibration) -> None:
     _save_figure(figure, path)
 
 
-def _ambiguities(colors: np.ndarray, slopes: np.ndarray, image_index: np.ndarray,
-                 color_threshold: float, angle_threshold: float,
-                 export_pairs: bool, output_dir: Path) -> dict:
-    try:
-        from scipy.spatial import cKDTree
-    except ImportError as exc:
-        raise RuntimeError('Ambiguity analysis requires scipy') from exc
-    tree = cKDTree(np.asarray(colors, np.float64))
-    normals = slopes_to_normals(slopes)
-    endpoints = np.zeros(len(colors), bool)
-    pair_count = within_count = cross_count = 0
-    saved_pairs, saved_distances, saved_angles = [], [], []
-    chunk_size = 8192
-    for start in range(0, len(colors), chunk_size):
-        stop = min(len(colors), start + chunk_size)
-        neighborhoods = tree.query_ball_point(colors[start:stop], color_threshold,
-                                              eps=0, workers=-1)
-        for local, neighbors in enumerate(neighborhoods):
-            first = start + local
-            second = np.asarray(neighbors, np.int64)
-            second = second[second > first]
-            if not len(second):
-                continue
-            dot = np.sum(normals[first] * normals[second], axis=-1)
-            cross = np.linalg.norm(np.cross(normals[first], normals[second]), axis=-1)
-            angle = np.degrees(np.arctan2(cross, dot))
-            selected = angle > angle_threshold
-            if not np.any(selected):
-                continue
-            second = second[selected]
-            angle = angle[selected]
-            endpoints[first] = True
-            endpoints[second] = True
-            pair_count += len(second)
-            same = image_index[first] == image_index[second]
-            within_count += int(np.count_nonzero(same))
-            cross_count += int(np.count_nonzero(~same))
-            if export_pairs:
-                pair = np.column_stack((np.full(len(second), first, np.int64), second))
-                saved_pairs.append(pair)
-                saved_distances.append(np.linalg.norm(colors[first] - colors[second], axis=-1))
-                saved_angles.append(angle)
-    artifact = None
-    if export_pairs:
-        pairs = (np.concatenate(saved_pairs) if saved_pairs
-                 else np.empty((0, 2), np.int64))
-        distances = (np.concatenate(saved_distances) if saved_distances
-                     else np.empty(0, np.float64))
-        angles = (np.concatenate(saved_angles) if saved_angles
-                  else np.empty(0, np.float64))
-        artifact = output_dir / 'ambiguities.npz'
-        temporary = artifact.with_suffix(artifact.suffix + '.tmp')
-        with temporary.open('wb') as stream:
-            np.savez_compressed(stream, pairs=pairs, distances=distances,
-                                angles_degrees=angles,
-                                ambiguous_sample_mask=endpoints)
-        temporary.replace(artifact)
-    return {
-        'mask': endpoints,
-        'pair_count': pair_count,
-        'ambiguous_sample_count': int(endpoints.sum()),
-        'within_image_pair_count': within_count,
-        'cross_image_pair_count': cross_count,
-        'pairs_exported': export_pairs,
-        'pair_artifact': artifact.name if artifact else None,
-        'color_distance_threshold': color_threshold,
-        'normal_angle_threshold_degrees': angle_threshold,
-    }
-
-
 def _plot_ambiguities(path: Path, slopes: np.ndarray, ambiguity: dict) -> None:
     plt = _matplotlib()
     mask = ambiguity['mask']
@@ -262,87 +190,19 @@ def _plot_ambiguities(path: Path, slopes: np.ndarray, ambiguity: dict) -> None:
                  xlim=(-extent, extent), ylim=(extent, -extent))
         axis.set_aspect('equal', adjustable='box')
     axes.ravel()[0].legend(loc='best')
-    figure.suptitle(f'Color ambiguity: {ambiguity["pair_count"]} exact pairs')
+    sampling = ambiguity.get('sampling', {})
+    scope = (f'sampled {sampling["analyzed_sample_count"]}/{sampling["original_sample_count"]}'
+             if sampling.get('is_sampled') else f'all {len(slopes)} samples')
+    figure.suptitle(f'Color ambiguity: {ambiguity["pair_count"]} pairs within {scope}')
     figure.tight_layout()
     _save_figure(figure, path)
 
 
-def _plot_frame_color(path: Path, residual: np.ndarray, valid: np.ndarray,
-                      difference_gain: float, color_bounds: np.ndarray, key: str) -> None:
-    plt = _matplotlib()
-    masked = np.where(valid[..., None], residual, np.nan)
-    composite = np.clip(.5 + difference_gain * residual, 0, 1)
-    composite[~valid] = 0
-    color_map = plt.get_cmap('coolwarm').copy()
-    color_map.set_bad('black')
-    figure, axes = plt.subplots(1, 4, figsize=(17, 4))
-    axes[0].imshow(composite)
-    axes[0].set_title('Signed delta RGB composite')
-    for component, name in enumerate('RGB'):
-        shown = axes[component + 1].imshow(masked[..., component], cmap=color_map,
-                                           vmin=-color_bounds[component],
-                                           vmax=color_bounds[component])
-        axes[component + 1].set_title(f'delta {name}')
-        figure.colorbar(shown, ax=axes[component + 1], shrink=.75)
-    for axis in axes:
-        axis.axis('off')
-    figure.suptitle(f'{key}: material-aligned color difference')
-    figure.tight_layout()
-    _save_figure(figure, path)
-
-
-def _plot_frame_slopes(path: Path, residual: np.ndarray, truth: np.ndarray,
-                       photometric_valid: np.ndarray, paired_valid: np.ndarray,
-                       calibration, slope_bound: float, angle_bound: float,
-                       key: str) -> None:
-    plt = _matplotlib()
-    predicted = np.zeros_like(truth, np.float32)
-    if np.any(photometric_valid):
-        predicted[photometric_valid] = lookup_slopes_raw(
-            residual[photometric_valid], calibration)[0]
-    error = np.full(paired_valid.shape, np.nan, np.float32)
-    error[paired_valid] = _angle_errors(predicted[paired_valid], truth[paired_valid])
-    pred_mag = np.linalg.norm(predicted, axis=-1)
-    pred_mag[~photometric_valid] = np.nan
-    diverging = plt.get_cmap('coolwarm').copy()
-    diverging.set_bad('black')
-    sequential = plt.get_cmap('viridis').copy()
-    sequential.set_bad('black')
-    angle_map = plt.get_cmap('magma').copy()
-    angle_map.set_bad('black')
-    figure, axes = plt.subplots(2, 3, figsize=(14, 8))
-    values = (predicted[..., 0], predicted[..., 1], pred_mag,
-              truth[..., 0], truth[..., 1], error)
-    titles = ('raw LUT p', 'raw LUT q', 'raw LUT magnitude',
-              'geometry p', 'geometry q', 'normal angle error (deg)')
-    for index, (axis, value, title) in enumerate(zip(axes.flat, values, titles, strict=True)):
-        mask = photometric_valid if index < 3 else paired_valid
-        data = np.where(mask, value, np.nan)
-        if index in (0, 1, 3, 4):
-            shown = axis.imshow(data, cmap=diverging,
-                                vmin=-slope_bound, vmax=slope_bound)
-        elif index == 5:
-            shown = axis.imshow(data, cmap=angle_map, vmin=0, vmax=angle_bound)
-        else:
-            shown = axis.imshow(data, cmap=sequential, vmin=0,
-                                vmax=math.sqrt(2) * slope_bound)
-        axis.set_title(title)
-        axis.axis('off')
-        figure.colorbar(shown, ax=axis, shrink=.72)
-    figure.suptitle(f'{key}: LUT prediction and analytic sphere truth')
-    figure.tight_layout()
-    _save_figure(figure, path)
-
-
-def generate_calibration_visualizations(context, reference, grid, poses, rows,
-                                        samples, final_lut, training_lut,
+def generate_calibration_visualizations(samples, final_lut, training_lut,
                                         settings, output_dir: Path) -> Path:
-    """Generate all global and per-pose diagnostics without frame caches."""
+    """Generate global and branch plots exclusively from first-pass samples."""
     output_dir = Path(output_dir)
-    color_dir = output_dir / 'color_difference'
-    slope_dir = output_dir / 'pq_mapping'
-    color_dir.mkdir(parents=True, exist_ok=False)
-    slope_dir.mkdir(parents=True, exist_ok=False)
+    output_dir.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     colors = np.asarray(samples['color_residual_samples'], np.float32)
     truth = np.asarray(samples['slope_samples'], np.float32)
@@ -368,58 +228,13 @@ def generate_calibration_visualizations(context, reference, grid, poses, rows,
                               validation)
     _plot_color_mapping(output_dir / 'color_pq_mapping.png', colors, fitted)
     _plot_lut_slices(output_dir / 'lut_slices.png', final_lut)
-    ambiguity = _ambiguities(colors, truth, image_index,
-                             settings.color_distance_threshold,
-                             settings.normal_angle_threshold_degrees,
-                             settings.export_ambiguity_pairs, output_dir)
-    _plot_ambiguities(output_dir / 'pq_ambiguities.png', truth, ambiguity)
-
-    accepted = {row['image_key']: pose for row, pose in zip(rows, poses, strict=True)
-                if row['status'] == 'accepted'}
-    color_bounds = np.maximum(np.maximum(np.abs(final_lut.color_min),
-                                         np.abs(final_lut.color_max)), 1e-6)
-    slope_bound = max(float(np.max(np.abs(truth))), 1e-6)
-    angle_bound = max(5., float(validation.get('thresholds', {}).get(
-        'rms_degrees', 5.)))
-    per_image = []
-    visualization_render_seconds = 0.
-    for index, key in enumerate(keys):
-        pose = accepted[key]
-        context.torch.cuda.synchronize(context.device)
-        frame_started = time.perf_counter()
-        frame = sample_pose(context, reference, grid, pose)
-        context.torch.cuda.synchronize(context.device)
-        visualization_render_seconds += time.perf_counter() - frame_started
-        compact = compact_frame_samples(frame, grid)
-        expected = image_index == index
-        if not np.array_equal(compact['material_grid_index'],
-                              samples['material_grid_index'][expected]) \
-                or not np.allclose(compact['color_residual_samples'],
-                                   colors[expected], rtol=0, atol=2e-6) \
-                or not np.allclose(compact['slope_samples'], truth[expected],
-                                   rtol=0, atol=2e-6):
-            raise RuntimeError(f'Second-pass samples do not match saved samples for {key}')
-        residual, true_image, photo_valid, paired_valid = image_space_diagnostics(
-            context, reference, frame)
-        residual = residual.detach().cpu().numpy()
-        true_image = true_image.detach().cpu().numpy()
-        photo_valid = photo_valid.detach().cpu().numpy()
-        paired_valid = paired_valid.detach().cpu().numpy()
-        color_path = color_dir / f'{key}.png'
-        slope_path = slope_dir / f'{key}.png'
-        _plot_frame_color(color_path, residual, photo_valid,
-                          settings.difference_gain, color_bounds, key)
-        _plot_frame_slopes(slope_path, residual, true_image, photo_valid,
-                           paired_valid, final_lut, slope_bound, angle_bound, key)
-        predicted_image = lookup_slopes_raw(colors[expected], final_lut)[0]
-        angles = _angle_errors(predicted_image, truth[expected])
-        per_image.append({
-            'image_key': key,
-            'sample_count': int(expected.sum()),
-            'calibration_fit_rms_degrees': float(np.sqrt(np.mean(angles ** 2))),
-            'color_difference': str(color_path.relative_to(output_dir)),
-            'pq_mapping': str(slope_path.relative_to(output_dir)),
-        })
+    ambiguity = run_ambiguity_analysis(
+        settings.output_dir / 'ambiguity_inputs.npz', settings.output_dir,
+        stride=settings.ambiguity_stride,
+        color_threshold=settings.color_distance_threshold,
+        angle_threshold=settings.normal_angle_threshold_degrees,
+        export_pairs=settings.export_ambiguity_pairs,
+        dominance_fraction=getattr(settings, 'branch_dominance_fraction', .8))
 
     summary = {
         'format_version': 1,
@@ -437,14 +252,18 @@ def generate_calibration_visualizations(context, reference, grid, poses, rows,
         },
         'held_out_validation': validation,
         'ambiguity': {key: value for key, value in ambiguity.items() if key != 'mask'},
-        'per_image': per_image,
         'artifacts': {
             'calibration_summary': 'calibration_summary.png',
             'color_pq_mapping': 'color_pq_mapping.png',
             'lut_slices': 'lut_slices.png',
             'pq_ambiguities': 'pq_ambiguities.png',
+            'branch_classification': 'ambiguity_patterns/branch_classification.png',
+            'branch_continuation': 'ambiguity_patterns/branch_continuation.png',
+            'branch_analysis': 'ambiguity_patterns/analysis.json',
         },
-        'visualization_render_seconds': visualization_render_seconds,
+        'diagnostics_source': 'first_pass_samples',
+        'visualization_render_count': 0,
+        'visualization_render_seconds': 0.,
         'total_visualization_seconds': time.perf_counter() - started,
     }
     _write_json(output_dir / 'summary.json', summary)

@@ -1,0 +1,28 @@
+{
+  "format_version": 1,
+  "curve_lut_transfer": {
+    "radii_mm": [null, 200.0, 100.0, 50.0],
+    "training_pose_source": "source_manifest",
+    "reference_pairing": "material",
+    "test_grid": {
+      "u": [-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8],
+      "v": [-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6],
+      "depths_mm": [0.75, 1.25]
+    },
+    "metrics": {
+      "aggregation": "pose_equal_reference_area",
+      "slope_tolerances": [0.025, 0.05, 0.1, 0.2],
+      "bootstrap_repeats": 2000,
+      "seed": 42,
+      "acceptance_slope_rmse": null,
+      "maximum_transfer_increase": null
+    },
+    "adaptation": {
+      "enabled": false,
+      "pose_budgets": [16, 64, 256],
+      "reference_floor": 0.01,
+      "ridge": 0.001,
+      "maximum_iterations": 100
+    }
+  }
+}

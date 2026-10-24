@@ -1,5 +1,8 @@
 .venv/
+.venv-xense/
+.uv-python/
 .uv-cache/
 __pycache__/
 *.py[cod]
 tests/
+results*/

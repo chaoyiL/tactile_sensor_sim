@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import math
+from .surface_coordinates import material_to_uv, require_flat
 
 
 @dataclass(frozen=True)
@@ -15,10 +16,13 @@ class ScanPose:
     center_xy_mm: tuple[float, float]
     depth_mm: float
     contact_radius_mm: float
+    center_uv: tuple[float, float] | None = None
 
     def to_dict(self) -> dict:
         value = asdict(self)
         value['center_xy_mm'] = list(self.center_xy_mm)
+        if self.center_uv is not None:
+            value['center_uv'] = list(self.center_uv)
         return value
 
 
@@ -48,10 +52,11 @@ def contact_radius_for(radius_mm: float, depth_mm: float) -> float:
 
 
 def build_scan_poses(config: dict) -> list[ScanPose]:
+    require_flat(config, 'LUT calibration scan')
     try:
         calibration = config['calibration']
         scan = calibration['scan']
-        radius = float(calibration['sphere_radius_mm'])
+        radius = float(config['indentation']['radius_mm'])
         width, height = map(float, config['surface']['size_mm'])
         step_x, step_y = map(float, scan['xy_step_mm'])
         include = scan.get('include_endpoints', True)
@@ -85,7 +90,8 @@ def build_scan_poses(config: dict) -> list[ScanPose]:
     for pose_id, row in enumerate(temporary):
         depth_index, row_index, column_index, x, y, depth, contact_radius = row
         records.append(ScanPose(pose_id, f'{pose_id:0{key_width}d}', depth_index,
-                                row_index, column_index, (x, y), depth, contact_radius))
+                                row_index, column_index, (x, y), depth, contact_radius,
+                                tuple(material_to_uv((x, y), (width, height)))))
     if not records:
         raise ValueError('Calibration scan generated no poses')
     return records

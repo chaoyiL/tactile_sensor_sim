@@ -1,0 +1,40 @@
+{
+  "backend": "xense",
+  "surface": {
+    "size_mm": [
+      17.3,
+      29.14
+    ],
+    "view_side_z": -1
+  },
+  "indentation": {
+    "radius_mm": 6.0,
+    "depth_mm": 1.0,
+    "center_uv": [
+      0.0,
+      0.0
+    ],
+    "direction_normal": -1
+  },
+  "mujoco": {
+    "python_executable": "../.venv-xense/Scripts/python.exe",
+    "sensor_mode": "simple",
+    "calibrate_file": "bundled:g1-ws_table",
+    "depth_size_wh": [
+      174,
+      293
+    ],
+    "mesh_size_wh": [
+      174,
+      293
+    ],
+    "render_size_wh": [
+      416,
+      700
+    ],
+    "camera_gap_mm": 10.0,
+    "smooth_norm": 0,
+    "smooth_mesh": 0,
+    "marker_policy": "require_absent"
+  }
+}
