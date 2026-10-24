@@ -114,4 +114,4 @@ analytic 的针孔半宽和导出网格步长现分别位于 `camera.pinhole_hal
 
 `simulate.py` 继续渲染平面；遇到非零曲率会提示使用新入口。平面 LUT 扫描保留原 `xy_step_mm`、完整姿态数量、序列与验证划分，同时在姿态记录中增加 `center_uv`。曲面 LUT 重标定和迁移评估现由独立入口 `python -m experiment.curve_lut_transfer` 提供，详见 [实验 README](../experiment/curve_lut_transfer/README.md)；通用平面标定与旧 NormDiff 入口保持原限制。
 
-历史 manifest、配置快照、样本和 LUT 保留原格式及原状态。生成曲面结果必须重新渲染曲面和同曲率参考，不复用平面图像或 LUT。设计公式与实现阶段见 [实施计划](plan_analytic_curved_surface.md)，实际验证见 [验证记录](analytic_curved_surface_validation.md)。
+历史 manifest、配置快照、样本和 LUT 保留原格式及原状态。生成曲面结果必须重新渲染曲面和同曲率参考，不复用平面图像或 LUT。局部切平面与坡度定义见 [局部重建原理](局部重建原理.md)，实际验证见 [验证记录](analytic_curved_surface_validation.md)。

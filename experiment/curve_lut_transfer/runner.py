@@ -4,11 +4,9 @@ import argparse
 import copy
 import csv
 from datetime import datetime, timezone
-from importlib.metadata import version, PackageNotFoundError
 import json
 from pathlib import Path
 import re
-import platform
 import uuid
 import numpy as np
 
@@ -25,6 +23,8 @@ from .storage import digest, signature, json_write, npz_write, load_arrays, save
 from .metrics import evaluate_pose, aggregate, paired_bootstrap, mapping_difference
 
 VERSION = 'curve_lut_transfer_v1'
+RESUME_INPUT_FIELDS = ('source', 'source_files', 'settings', 'config', 'split',
+                       'training_poses', 'test_poses')
 
 
 def condition_id(radius: float | None) -> str:
@@ -109,18 +109,9 @@ def prepare(source: Path, settings: dict) -> dict:
         raise ValueError('Adaptation pose budget exceeds available source poses')
     source_files = {name: digest(root / name) for name in
                     ('manifest.json', 'normal_lut.npz', 'normal_lut_train.npz', 'normal_samples.npz')}
-    project = Path(__file__).resolve().parents[2]
-    code_files = sorted((project / 'utils').glob('*.py')) + sorted(Path(__file__).parent.glob('*.py')) + [project / 'experiment/config.py']
-    code = {str(p.relative_to(project)).replace('\\', '/'): digest(p) for p in code_files}
-    runtime = {'python': platform.python_version(), 'platform': platform.platform()}
-    for package in ('numpy', 'scipy', 'torch', 'triton-windows', 'Pillow', 'matplotlib'):
-        try:
-            runtime[package] = version(package)
-        except PackageNotFoundError:
-            runtime[package] = None
     identity = dict(version=VERSION, sampling_version=SAMPLING_VERSION, slope_frame_id=SLOPE_FRAME_ID,
                     source=str(root), source_files=source_files, settings=settings,
-                    config=base, split=split, training_poses=train, test_poses=test, code=code, runtime=runtime)
+                    config=base, split=split, training_poses=train, test_poses=test)
     count = len(conditions) * (len(test)+1) + (len(conditions)-1)*len(train)
     g = reference_grid(base)
     pixels = base['camera']['width_px'] * base['camera']['height_px']
@@ -129,7 +120,8 @@ def prepare(source: Path, settings: dict) -> dict:
     current_cal = backend_layout.CONFIG_DIR / 'calibration.json'
     live = json.loads(current_cal.read_text(encoding='utf-8')) if current_cal.is_file() else None
     return dict(root=root, source_manifest=manifest, lut=lut, base=base, train=train, test=test,
-                conditions=conditions, split=split, identity=identity, run_signature=signature(identity),
+                conditions=conditions, split=split, identity=identity,
+                run_signature=signature({k: identity[k] for k in RESUME_INPUT_FIELDS}),
                 workload=dict(reference_frames=len(conditions), training_frames=(len(conditions)-1)*len(train),
                               test_frames=len(conditions)*len(test), total_frames=count,
                               material_grid_shape=list(g.xy_mm.shape[:2]),
@@ -150,10 +142,16 @@ def start_run(prepared: dict, settings: dict, out: Path | None, resume: bool) ->
         if not path.is_file():
             raise ValueError(f'--resume requires a checkpoint manifest: {path}')
         manifest = json.loads(path.read_text(encoding='utf-8'))
-        if manifest['run_signature'] != prepared['run_signature']:
-            raise ValueError(f'Resume signature mismatch (source/config/code): {path}')
+        previous = manifest.get('identity', {})
+        changed = [key for key in RESUME_INPUT_FIELDS
+                   if previous.get(key) != prepared['identity'].get(key)]
+        if changed:
+            raise ValueError(f'Resume inputs differ ({", ".join(changed)}): {path}')
         result = Checkpoints(out, manifest)
         result.verify()
+        # Keep the existing run ID, including runs whose old ID also hashed code.
+        # Code edits and runtime version changes are not data incompatibilities.
+        prepared['run_signature'] = manifest['run_signature']
         return result
     if out.exists() and any(out.iterdir()):
         raise ValueError(f'Nonempty output requires compatible --resume: {out}')
@@ -186,6 +184,8 @@ def render_condition(p: dict, ck: Checkpoints, name: str, radius: float | None) 
     jobs = [('test', p['test'])] + ([] if radius is None else [('training', p['train'])])
     if ck.has(name+'/reference') and all(ck.has(f'{name}/{group}/{pose["pose_id"]}') for group, poses in jobs for pose in poses):
         return
+
+    # 负责生成标定球采样的对象
     sampler = MaterialSampler(pose_config(p['base'], radius))
     if ck.has(name+'/reference'):
         a = load_arrays(reference_path)

@@ -1,6 +1,6 @@
 # analytic 弯曲表面实施验证
 
-验证日期：2026-10-23。实现对应 [设计计划](plan_analytic_curved_surface.md) 的 P1–P5；运行和配置见 [使用说明](analytic_curved_surface_usage.md)。
+验证日期：2026-10-23。本文记录 analytic 曲面几何、渲染、坐标迁移及输出的实施验证；运行和配置见 [使用说明](analytic_curved_surface_usage.md)。
 
 ## 实施结果
 

@@ -1,6 +1,6 @@
 # 平面 LUT 向曲面切平面的迁移
 
-冻结一个已发布的 analytic 平面 LUT，对新生成的平面和圆柱曲面色差查表；同时按源标定的完整姿态及原训练/验证划分，重新拟合各曲率 LUT。所有 LUT 在同一套独立测试数据上比较。方法与范围见 [实验计划](../../docs/plan_curve_lut_transfer.md)，符号见 [局部重建原理](../../docs/局部重建原理.md)。
+冻结一个已发布的 analytic 平面 LUT，对新生成的平面和圆柱曲面色差查表；同时按源标定的完整姿态及原训练/验证划分，重新拟合各曲率 LUT。所有 LUT 在同一套独立测试数据上比较。本文说明方法、范围和运行方式，符号见 [局部重建原理](../../docs/局部重建原理.md)，已完成的正式实验过程与结果见 [弯曲后迁移 LUT 效果](../../docs/弯曲后迁移LUT效果.md)。
 
 ## 运行
 
@@ -13,7 +13,7 @@
 # 完整实验，自动创建新的运行目录
 .\.venv\Scripts\python.exe -m experiment.curve_lut_transfer --lut-results results_lut/analytic --exp-config configs/curve_lut_transfer.json
 
-# 恢复指定运行；配置、源文件和实现签名必须一致
+# 恢复指定运行；核对实际输入与配置，代码小改动不阻止续跑
 .\.venv\Scripts\python.exe -m experiment.curve_lut_transfer --lut-results results_lut/analytic --out results_lut/analytic/evaluation/curve_lut_transfer/<run> --resume
 ```
 
@@ -64,7 +64,7 @@ LUT 变化通过**相同物理 RGB 查询的函数差异**比较。查询集来�
 
 ```text
 <source>/evaluation/curve_lut_transfer/<run>/
-  manifest.json                 # 源哈希、实现签名、完整配置/姿态、逐项检查点
+  manifest.json                 # 源哈希、运行标识、完整配置/姿态、逐项检查点
   config_snapshot.json / split.json
   samples/<condition>/reference.npz
   samples/<condition>/{test,training}/<pose>.npz
@@ -75,7 +75,7 @@ LUT 变化通过**相同物理 RGB 查询的函数差异**比较。查询集来�
   figures/                      # PNG 和对应完整数值 NPZ
 ```
 
-原始平面帧保存到 `results_render/analytic/curve_lut_transfer/<run>/flat/`；曲面帧保存到 `results_curve_render/analytic/curve_lut_transfer/<run>/<condition>/`。每帧有实际用于观测的 `image.png`、保存 sensor/radiance/图像几何真值的 `render.npz`、有效配置与执行信息 `metadata.json`。参考和每个姿态的所有产物完成并校验哈希后才记为完成。恢复时核对源 LUT、样本、配置、实现及已完成文件；参考图损坏或配置变化都拒绝续跑。未完成姿态可重新计算，已完成姿态不会重复渲染。
+原始平面帧保存到 `results_render/analytic/curve_lut_transfer/<run>/flat/`；曲面帧保存到 `results_curve_render/analytic/curve_lut_transfer/<run>/<condition>/`。每帧有实际用于观测的 `image.png`、保存 sensor/radiance/图像几何真值的 `render.npz`、有效配置与执行信息 `metadata.json`。参考和每个姿态的所有产物完成并校验哈希后才记为完成。恢复时只核对源 LUT、样本、实际配置、姿态划分及已完成文件，不比较代码文件哈希、提交号、实现标签或依赖版本。已有旧版 manifest 可直接恢复，保留原运行标识，无须手改签名。参考图损坏或实际输入变化仍明确报错。未完成姿态可重新计算，已完成姿态不会重复渲染。
 
 主要图为 `slope_rmse.png`、`position_heatmaps.png`（共享色标）和 `cross_curvature.png`；另输出固定左/中/右及最差姿态的向量/误差图、物理 RGB 切片。箭头密度仅影响显示，指标与 NPZ 使用完整数据。历史结果和源 LUT 从不搬移或覆盖。
 
