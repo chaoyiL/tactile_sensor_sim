@@ -17,3 +17,5 @@
 See [light_distribution](light_distribution/README.md) for full-scan, power-only analytic light optimization against a saved target LUT. Config: configs/light_distribution.json.
 
 新增 [curve_lut_transfer](curve_lut_transfer/README.md)：冻结已发布的 analytic 平面 LUT，比较弯曲后的色差查表与局部切平面坡度真值，并按原姿态/划分重标定曲面 LUT。配置为 `configs/curve_lut_transfer.json`，入口为 `python -m experiment.curve_lut_transfer --lut-results results_lut/analytic --dry-run`。输出位于源结果的 `evaluation/curve_lut_transfer/<run>/`；原始平面/曲面帧分别保存到 `results_render` / `results_curve_render`。主指标为姿态等权、参考面积加权的坡度向量 RMSE；同时输出位置图、交叉查表矩阵及共同物理 RGB 上的 LUT 函数差异。
+
+新增 [curve_lut_compensation](curve_lut_compensation/README.md)：基于源快照中的已知模型 `H_pt` 对平面 LUT 做端点颜色补偿，并评估局部矩阵补偿；与冻结平面 LUT 和历史同曲率重标定 LUT 在历史曲面测试档案上比较。该数据已用于理论分析，因此结果属于档案对比，不是新的盲测，也不代表平面参数识别或真实传感器参数估计。配置为 `configs/curve_lut_compensation.json`；入口为 `python -m experiment.curve_lut_compensation --lut-results results_lut/analytic --transfer-results <历史迁移运行目录> --dry-run`。输出位于源结果的 `evaluation/curve_lut_compensation/<run>/`。具体方法见[平面 LUT 向曲面迁移的补偿方法](../docs/平面LUT曲面迁移补偿方法.md)，实验及实现验证结果见[平面 LUT 补偿迁移实验结果](../docs/平面-切平面LUT迁移补偿.md)。

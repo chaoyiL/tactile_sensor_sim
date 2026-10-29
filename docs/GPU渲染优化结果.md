@@ -1,6 +1,6 @@
-# GPU 渲染优化
+# GPU 渲染优化验证结果
 
-PyTorch 编译加速已经落地：多帧上下文默认使用 Inductor 光照因子融合，并保留原 RGB 归约及 CUDA Graph。新增阶段的验收、安装和模式设置见 [编译加速验收](pytorch_compile_acceleration_validation.md)。下文保留前一阶段 CUDA Graph 优化记录。
+PyTorch 编译加速已经落地：多帧上下文默认使用 Inductor 光照因子融合，并保留原 RGB 归约及 CUDA Graph。新增阶段的验收、安装和模式设置见 [编译加速验收](PyTorch编译加速验证结果.md)。下文保留前一阶段 CUDA Graph 优化记录。
 
 实现使用现有 PyTorch CUDA 环境，无需新增依赖。默认设置为：
 

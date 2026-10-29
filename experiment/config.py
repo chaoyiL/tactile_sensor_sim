@@ -165,7 +165,7 @@ def load_experiment_config(path: str | Path = DEFAULT_EXP_CONFIG) -> dict:
         raise ValueError('Expected an exp_config file with format_version=1')
     allowed = {'format_version', 'simulation', 'norm_diff', 'norm_diff_evaluation',
                'lut_quality', 'length_normdiff', 'length_lutqual', 'light_distribution',
-               'curve_lut_transfer'}
+               'curve_lut_transfer', 'curve_lut_compensation'}
     unknown = set(config) - allowed
     if unknown:
         raise ValueError(f'Unknown experiment configuration sections in {path}: {sorted(unknown)}')
@@ -182,6 +182,8 @@ def load_experiment_config(path: str | Path = DEFAULT_EXP_CONFIG) -> dict:
         resolve_lut_quality_settings(config)
     if 'curve_lut_transfer' in config:
         resolve_curve_lut_transfer_settings(config)
+    if 'curve_lut_compensation' in config:
+        resolve_curve_lut_compensation_settings(config)
     if 'length_lutqual' in config:
         resolve_length_lutqual_settings(config)
     if 'light_distribution' in config:
@@ -290,3 +292,73 @@ def resolve_curve_lut_transfer_settings(config: dict, **overrides) -> dict:
     if type(a['maximum_iterations']) is not int or a['maximum_iterations'] < 1:
         raise ValueError('maximum_iterations must be a positive integer')
     return s
+
+
+CURVE_LUT_COMPENSATION_DEFAULTS = {
+    'radii_mm': [None, 200., 100., 50.],
+    'reference_pairing': 'material',
+    'metrics': {'aggregation': 'pose_equal_reference_area',
+                'slope_tolerances': [.025, .05, .1, .2],
+                'bootstrap_repeats': 2000, 'seed': 42},
+    'matrix': {'ridge_lambda': .001, 'minimum_singular_value': 1e-8,
+               'slope_step': 1e-5, 'rcond': 1e-10},
+    'chunk_size': 8192,
+}
+
+
+def resolve_curve_lut_compensation_settings(config: dict, **overrides) -> dict:
+    """Validate fixed transfer conditions and prespecified response-matrix settings."""
+    raw = copy.deepcopy(config.get('curve_lut_compensation', {}))
+    raw.update({key: value for key, value in overrides.items() if value is not None})
+
+    def merge(default: dict, value: dict, name: str) -> dict:
+        if not isinstance(value, dict) or set(value) - set(default):
+            raise ValueError(f'{name}: expected object with keys {sorted(default)}')
+        result = copy.deepcopy(default)
+        for key, item in value.items():
+            result[key] = merge(default[key], item, f'{name}.{key}') \
+                if isinstance(default[key], dict) else item
+        return result
+
+    settings = merge(CURVE_LUT_COMPENSATION_DEFAULTS, raw, 'curve_lut_compensation')
+    radii = settings['radii_mm']
+    if not isinstance(radii, list) or len(radii) < 2 or radii.count(None) != 1:
+        raise ValueError('curve_lut_compensation.radii_mm must contain exactly one null flat condition and at least one radius')
+    normalized_radii = []
+    for value in radii:
+        if value is None:
+            normalized_radii.append(None)
+        elif isinstance(value, bool) or not isinstance(value, (int, float)) \
+                or not math.isfinite(value) or value <= 0:
+            raise ValueError('curve_lut_compensation.radii_mm values must be null or finite positive numbers')
+        else:
+            normalized_radii.append(float(value))
+    if len({('flat' if value is None else value) for value in normalized_radii}) != len(normalized_radii):
+        raise ValueError('curve_lut_compensation.radii_mm must contain unique conditions')
+    settings['radii_mm'] = normalized_radii
+    if settings['reference_pairing'] != 'material':
+        raise ValueError('curve_lut_compensation.reference_pairing must be material')
+    metrics = settings['metrics']
+    if metrics['aggregation'] != 'pose_equal_reference_area':
+        raise ValueError('metrics.aggregation must be pose_equal_reference_area')
+    tolerances = metrics['slope_tolerances']
+    if not isinstance(tolerances, list) or not tolerances:
+        raise ValueError('metrics.slope_tolerances must be a nonempty array')
+    if any(isinstance(value, bool) or not isinstance(value, (int, float))
+           or not math.isfinite(value) or value <= 0 for value in tolerances):
+        raise ValueError('metrics.slope_tolerances must be finite and positive')
+    if len(set(tolerances)) != len(tolerances):
+        raise ValueError('metrics.slope_tolerances must be unique')
+    for key, minimum in (('bootstrap_repeats', 1), ('seed', 0)):
+        value = metrics[key]
+        if type(value) is not int or value < minimum:
+            raise ValueError(f'metrics.{key} must be an integer >= {minimum}')
+    matrix = settings['matrix']
+    for key in ('ridge_lambda', 'minimum_singular_value', 'slope_step', 'rcond'):
+        value = matrix[key]
+        if isinstance(value, bool) or not isinstance(value, (int, float)) \
+                or not math.isfinite(value) or value <= 0:
+            raise ValueError(f'matrix.{key} must be finite and positive')
+    if type(settings['chunk_size']) is not int or settings['chunk_size'] < 1:
+        raise ValueError('curve_lut_compensation.chunk_size must be a positive integer')
+    return settings

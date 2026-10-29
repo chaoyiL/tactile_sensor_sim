@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "curve_lut_compensation": {
+    "radii_mm": [null, 200.0, 100.0, 50.0],
+    "reference_pairing": "material",
+    "metrics": {
+      "aggregation": "pose_equal_reference_area",
+      "slope_tolerances": [0.025, 0.05, 0.1, 0.2],
+      "bootstrap_repeats": 2000,
+      "seed": 42
+    },
+    "matrix": {
+      "ridge_lambda": 0.001,
+      "minimum_singular_value": 1e-8,
+      "slope_step": 1e-5,
+      "rcond": 1e-10
+    },
+    "chunk_size": 8192
+  }
+}

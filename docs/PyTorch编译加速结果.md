@@ -1,4 +1,4 @@
-# PyTorch 编译加速验收与使用
+# PyTorch 编译加速验证结果
 
 验收日期：2026-10-21。实现使用 PyTorch Inductor 编译固定像素/灯块的几何、阴影和光照因子计算，继续复用手动 CUDA Graph。RGB 乘法、灯块内归约与跨块累加保留原 ATen 顺序。
 

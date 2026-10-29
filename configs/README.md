@@ -20,6 +20,6 @@ Xense 的 `mujoco.python_executable` 是相对于 `configs/xense.json` 的路径
 
 `analytic.json` 新增 `surface.bending`：`axis=x`、`radius_mm=null` 表示平面、`direction_z=-1` 表示两侧向 −Z 弯曲。运行 `simulate_curve.py --radius-mm 100 --reference` 可生成曲面及同曲率参考帧。三个仿真器的位置统一使用 `indentation.center_uv∈[-1,1]²`，方向使用 `direction_normal`。旧平面毫米坐标仍可读取，新旧字段冲突时报错。
 
-analytic 的针孔半宽和导出网格步长分别位于 `camera.pinhole_half_width_mm`、`render.mesh_step_mm`；旧位置仅作同文件兼容读取。详见[曲面使用说明](../docs/analytic_curved_surface_usage.md)。
+analytic 的针孔半宽和导出网格步长分别位于 `camera.pinhole_half_width_mm`、`render.mesh_step_mm`；旧位置仅作同文件兼容读取。详见[曲面仿真验证结果](../docs/解析曲面仿真验证结果.md)。
 
 省略 `--out` 时，无弯曲的渲染写入 `results_render/<backend>/<唯一运行标识>/`，有弯曲的渲染写入 `results_curve_render/analytic/<唯一运行标识>/`。目录分类依据 CLI 覆盖后的曲率，零压入参考不改变分类；显式输出路径仍然优先。

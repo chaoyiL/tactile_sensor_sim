@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "read_only_completed_resume": true,
+  "torch_imported": false,
+  "checked_report_files": [
+    "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\manifest.json",
+    "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\metrics.json",
+    "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\per_pose.csv",
+    "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\runtime.json"
+  ],
+  "seconds": 33.470634200028144,
+  "stdout": "Experiment output: D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\nCompleted run verified; no artifacts rewritten.\n"
+}
