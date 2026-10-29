@@ -1,0 +1,94 @@
+{
+  "status": "passed",
+  "mode": "archived_lut_reevaluation_and_four_production_pose_cuda_replays",
+  "methods": [
+    "frozen_flat_lut",
+    "endpoint_migrated_lut",
+    "historical_same_curvature_lut"
+  ],
+  "domains": [
+    "full",
+    "common"
+  ],
+  "metric_groups": 24,
+  "bootstrap_comparisons": 8,
+  "metric_differences": [],
+  "bootstrap_differences": [],
+  "gpu_pose_checks": [
+    {
+      "condition": "flat",
+      "pose_id": "000000",
+      "sample_count": 1789,
+      "color_max_absolute_difference": 0.0,
+      "slope_max_absolute_difference": 0.0
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "000000",
+      "sample_count": 1775,
+      "color_max_absolute_difference": 0.0,
+      "slope_max_absolute_difference": 0.0
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "000000",
+      "sample_count": 1757,
+      "color_max_absolute_difference": 0.0,
+      "slope_max_absolute_difference": 0.0
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "000000",
+      "sample_count": 1707,
+      "color_max_absolute_difference": 0.0,
+      "slope_max_absolute_difference": 0.0
+    }
+  ],
+  "execution": {
+    "flat": {
+      "device": "cuda:0",
+      "geometry_dtype": "float64",
+      "radiometry_dtype": "float32",
+      "light_sample_count": 52,
+      "light_chunk_size": 16,
+      "shadows": true,
+      "tone_map": "reinhard",
+      "model": "continuous_material_point_H_pt"
+    },
+    "radius_200": {
+      "device": "cuda:0",
+      "geometry_dtype": "float64",
+      "radiometry_dtype": "float32",
+      "light_sample_count": 52,
+      "light_chunk_size": 16,
+      "shadows": true,
+      "tone_map": "reinhard",
+      "model": "continuous_material_point_H_pt"
+    },
+    "radius_100": {
+      "device": "cuda:0",
+      "geometry_dtype": "float64",
+      "radiometry_dtype": "float32",
+      "light_sample_count": 52,
+      "light_chunk_size": 16,
+      "shadows": true,
+      "tone_map": "reinhard",
+      "model": "continuous_material_point_H_pt"
+    },
+    "radius_50": {
+      "device": "cuda:0",
+      "geometry_dtype": "float64",
+      "radiometry_dtype": "float32",
+      "light_sample_count": 52,
+      "light_chunk_size": 16,
+      "shadows": true,
+      "tone_map": "reinhard",
+      "model": "continuous_material_point_H_pt"
+    }
+  },
+  "historical_files_unchanged": true,
+  "no_matrix_module": true,
+  "no_matrix_outputs": true,
+  "no_new_full_calibration": true,
+  "no_new_full_scan": true
+}

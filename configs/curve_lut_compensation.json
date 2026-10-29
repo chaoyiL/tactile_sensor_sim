@@ -9,12 +9,18 @@
       "bootstrap_repeats": 2000,
       "seed": 42
     },
-    "matrix": {
-      "ridge_lambda": 0.001,
-      "minimum_singular_value": 1e-8,
-      "slope_step": 1e-5,
-      "rcond": 1e-10
-    },
-    "chunk_size": 8192
+    "chunk_size": 8192,
+    "nonlinear": {
+      "steps": [1, 2, 3],
+      "damping": 0.0001,
+      "prior_weight": 0.0,
+      "max_step": 0.5,
+      "color_epsilon": 0.0001,
+      "max_condition": 10000.0,
+      "minimum_normal_dot": 0.1,
+      "active_set_update": true,
+      "benchmark_repeats": 5,
+      "warmup_repeats": 2
+    }
   }
 }

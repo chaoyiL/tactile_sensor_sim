@@ -1,0 +1,15 @@
+{
+  "methods": [
+    "frozen_flat_lut",
+    "endpoint_migrated_lut",
+    "historical_same_curvature_lut"
+  ],
+  "domains": [
+    "full",
+    "common"
+  ],
+  "source_pose_count": 704,
+  "source_sample_count": 2279043,
+  "historical_test_archives": 504,
+  "matrix_configuration_present": false
+}

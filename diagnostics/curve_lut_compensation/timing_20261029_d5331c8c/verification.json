@@ -1,0 +1,17 @@
+{
+  "metric_sections_identical": {
+    "metrics": true,
+    "comparisons": true,
+    "coverage": true,
+    "training_transfer_diagnostics": true
+  },
+  "calibration": "all_four_passed",
+  "fresh_migration": "four_conditions_704_new_zero_reused",
+  "query_groups": 36,
+  "completed_resume_seconds": 23.32802870008163,
+  "completed_resume_artifacts_unchanged": true,
+  "completed_resume_session_files_unchanged": true,
+  "torch_imported": false,
+  "dry_run_output_created": false,
+  "protected_original_inputs_unchanged": true
+}

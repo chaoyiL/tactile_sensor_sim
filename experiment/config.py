@@ -300,16 +300,87 @@ CURVE_LUT_COMPENSATION_DEFAULTS = {
     'metrics': {'aggregation': 'pose_equal_reference_area',
                 'slope_tolerances': [.025, .05, .1, .2],
                 'bootstrap_repeats': 2000, 'seed': 42},
-    'matrix': {'ridge_lambda': .001, 'minimum_singular_value': 1e-8,
-               'slope_step': 1e-5, 'rcond': 1e-10},
     'chunk_size': 8192,
 }
 
+NONLINEAR_DEFAULTS = {
+    'steps': [1, 2, 3],
+    'damping': 1e-4,
+    'prior_weight': 0.0,
+    'max_step': 0.5,
+    'color_epsilon': 1e-4,
+    'max_condition': 10000.,
+    'minimum_normal_dot': 0.1,
+    'active_set_update': True,
+    'benchmark_repeats': 5,
+    'warmup_repeats': 2,
+}
+
+
+def resolve_curve_lut_nonlinear_settings(settings: dict) -> dict:
+    """Resolve and validate optional nonlinear comparison settings."""
+    if not isinstance(settings, dict):
+        raise ValueError('curve_lut_compensation.nonlinear must be an object')
+    unknown = set(settings) - set(NONLINEAR_DEFAULTS)
+    if unknown:
+        raise ValueError(f'Unknown nonlinear settings: {sorted(unknown)}')
+    resolved = copy.deepcopy(NONLINEAR_DEFAULTS)
+    resolved.update(copy.deepcopy(settings))
+
+    steps = resolved['steps']
+    if not isinstance(steps, list) or not steps or any(
+            type(step) is not int or step not in (1, 2, 3) for step in steps):
+        raise ValueError('nonlinear.steps must be a nonempty list containing only integers 1, 2, and 3')
+    if len(set(steps)) != len(steps):
+        raise ValueError('nonlinear.steps must not contain duplicates')
+
+    for key in ('damping', 'max_step', 'color_epsilon'):
+        value = resolved[key]
+        if isinstance(value, bool) or not isinstance(value, (int, float)) \
+                or not math.isfinite(value) or value < 0:
+            raise ValueError(f'nonlinear.{key} must be finite and nonnegative')
+        resolved[key] = float(value)
+    if resolved['max_step'] == 0:
+        raise ValueError('nonlinear.max_step must be finite and positive')
+    if not 0 < resolved['color_epsilon'] < 0.5:
+        raise ValueError('nonlinear.color_epsilon must be in (0,0.5)')
+    prior_weight = resolved['prior_weight']
+    if isinstance(prior_weight, bool) or not isinstance(prior_weight, (int, float)) \
+            or not math.isfinite(prior_weight) or prior_weight < 0:
+        raise ValueError('nonlinear.prior_weight must be finite and nonnegative')
+    resolved['prior_weight'] = float(prior_weight)
+
+    max_condition = resolved['max_condition']
+    if isinstance(max_condition, bool) or not isinstance(max_condition, (int, float)) \
+            or not math.isfinite(max_condition) or max_condition <= 1:
+        raise ValueError('nonlinear.max_condition must be finite and >1')
+    resolved['max_condition'] = float(max_condition)
+    minimum_normal_dot = resolved['minimum_normal_dot']
+    if isinstance(minimum_normal_dot, bool) or not isinstance(minimum_normal_dot, (int, float)) \
+            or not math.isfinite(minimum_normal_dot) or not 0 < minimum_normal_dot <= 1:
+        raise ValueError('nonlinear.minimum_normal_dot must be finite and in (0,1]')
+    resolved['minimum_normal_dot'] = float(minimum_normal_dot)
+
+    if type(resolved['active_set_update']) is not bool:
+        raise ValueError('nonlinear.active_set_update must be boolean')
+
+    for key, minimum in (('benchmark_repeats', 1), ('warmup_repeats', 0)):
+        value = resolved[key]
+        if type(value) is not int or value < minimum:
+            raise ValueError(f'nonlinear.{key} must be an integer >= {minimum}')
+    return resolved
+
 
 def resolve_curve_lut_compensation_settings(config: dict, **overrides) -> dict:
-    """Validate fixed transfer conditions and prespecified response-matrix settings."""
+    """Validate fixed transfer conditions for LUT compensation."""
     raw = copy.deepcopy(config.get('curve_lut_compensation', {}))
+    if isinstance(raw, dict) and 'matrix' in raw:
+        raise ValueError('已移除矩阵补偿，请移除matrix配置；非线性反演使用nonlinear配置')
     raw.update({key: value for key, value in overrides.items() if value is not None})
+    if 'matrix' in raw:
+        raise ValueError('已移除矩阵补偿，请移除matrix配置；非线性反演使用nonlinear配置')
+    has_nonlinear = 'nonlinear' in raw
+    nonlinear = raw.pop('nonlinear', None)
 
     def merge(default: dict, value: dict, name: str) -> dict:
         if not isinstance(value, dict) or set(value) - set(default):
@@ -353,12 +424,8 @@ def resolve_curve_lut_compensation_settings(config: dict, **overrides) -> dict:
         value = metrics[key]
         if type(value) is not int or value < minimum:
             raise ValueError(f'metrics.{key} must be an integer >= {minimum}')
-    matrix = settings['matrix']
-    for key in ('ridge_lambda', 'minimum_singular_value', 'slope_step', 'rcond'):
-        value = matrix[key]
-        if isinstance(value, bool) or not isinstance(value, (int, float)) \
-                or not math.isfinite(value) or value <= 0:
-            raise ValueError(f'matrix.{key} must be finite and positive')
     if type(settings['chunk_size']) is not int or settings['chunk_size'] < 1:
         raise ValueError('curve_lut_compensation.chunk_size must be a positive integer')
+    if has_nonlinear:
+        settings['nonlinear'] = resolve_curve_lut_nonlinear_settings(nonlinear)
     return settings

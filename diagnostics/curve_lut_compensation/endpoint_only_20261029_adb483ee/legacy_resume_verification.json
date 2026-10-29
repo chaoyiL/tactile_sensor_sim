@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "legacy_v1_completed_resume_read_only": true,
+  "retired_settings_accepted_from_manifest_only": true,
+  "new_timing_session_created": false,
+  "torch_imported": false
+}

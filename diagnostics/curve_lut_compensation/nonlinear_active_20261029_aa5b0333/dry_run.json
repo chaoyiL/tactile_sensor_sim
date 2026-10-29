@@ -1,0 +1,51 @@
+{
+  "status": "dry-run",
+  "mode": "finite_slope_comparison_v1",
+  "output": "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\nonlinear_active_20261029_aa5b0333",
+  "methods": [
+    "frozen_flat_lut",
+    "endpoint_migrated_lut",
+    "nonlinear_gn1",
+    "nonlinear_gn2",
+    "nonlinear_gn3",
+    "nonlinear_active_gn3",
+    "nonlinear_closed_or_gn3"
+  ],
+  "nonlinear": {
+    "steps": [
+      1,
+      2,
+      3
+    ],
+    "damping": 0.0001,
+    "prior_weight": 0.0,
+    "max_step": 0.5,
+    "color_epsilon": 0.0001,
+    "max_condition": 10000.0,
+    "minimum_normal_dot": 0.1,
+    "active_set_update": true,
+    "benchmark_repeats": 5,
+    "warmup_repeats": 2
+  },
+  "workload": {
+    "source_pose_count": 704,
+    "source_sample_count": 2279043,
+    "material_grid_shape": [
+      219,
+      560
+    ],
+    "material_grid_points": 122640,
+    "target_condition_count": 4,
+    "test_pose_count": 126,
+    "historical_test_sample_count": 504,
+    "endpoint_model_evaluations_per_source_point": 16,
+    "full_frame_renders": 0,
+    "target_test_observations_reused": true,
+    "source_sample_semantics": "all saved source material samples; target labels recomputed",
+    "target_test_semantics": "historical actual material-paired sRGB8 observations"
+  },
+  "endpoint_luts_reused": "results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c",
+  "cuda_initialized": false,
+  "endpoint_refit_count": 0,
+  "render_count": 0
+}

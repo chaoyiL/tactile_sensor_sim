@@ -172,7 +172,7 @@ class PhotometryModel:
         return torch.as_tensor(pack_curve_pose(state), device=self.device,
                                dtype=self.geometry_dtype)
 
-    def _shade(self, points, normal_optical, state, *, need_linear_matrix: bool = False):
+    def _shade(self, points, normal_optical, state):
         torch = self.torch
         from utils.renderer_kernels import light_block_factor
         from utils.curve_renderer_kernels import curve_light_block_factor
@@ -183,8 +183,6 @@ class PhotometryModel:
         irradiance = torch.zeros((len(points), 3), device=self.device,
                                  dtype=self.radiometry_dtype)
         active_blocks = []
-        coefficient = (torch.zeros((len(points), 3, 3), device=self.device,
-                                   dtype=self.radiometry_dtype) if need_linear_matrix else None)
         if self.radius_mm is None:
             factor_function = light_block_factor
             meta = dict(width=self.width_mm, height=self.height_mm,
@@ -210,31 +208,8 @@ class PhotometryModel:
             factor, visible = factor_function(*args, **meta)
             contribution = torch.sum(factor[..., None] * powers[None, :, :], dim=1)
             irradiance += contribution
-
-            if need_linear_matrix:
-                vector = light[None, :, :] - points[:, None, :]
-                distance2 = torch.sum(vector * vector, dim=-1)
-                direction = vector / torch.sqrt(torch.clamp(
-                    distance2, min=torch.finfo(distance2.dtype).tiny))[..., None]
-                cosine_in = torch.sum(normal_optical[:, None, :] * direction, dim=-1)
-                cosine_emit = torch.clamp(torch.sum(-direction * emission[None, :, :], dim=-1), min=0.)
-                active = visible & (cosine_in > 0.) & (cosine_emit > 0.)
-                active_blocks.append(active)
-                emission_power = cosine_emit if self.unit_light_exponents \
-                    else cosine_emit ** exponent[None, :]
-                base_weight = normalization[None, :] * emission_power
-                base_weight = base_weight * visible / torch.clamp(
-                    distance2, min=torch.finfo(distance2.dtype).tiny)
-                base_weight = torch.where(active, base_weight, torch.zeros_like(base_weight))
-                base_weight = base_weight.to(self.radiometry_dtype)
-                direction_rad = direction.to(self.radiometry_dtype)
-                block = torch.sum(base_weight[..., None, None]
-                                  * powers[None, :, :, None]
-                                  * direction_rad[..., None, :], dim=1)
-                coefficient += block
-            else:
-                # Activity is kept for diagnostics even when only H_pt is requested.
-                active_blocks.append(visible & (factor > 0.))
+            # Activity is kept for diagnostics for the ordinary H_pt evaluation.
+            active_blocks.append(visible & (factor > 0.))
 
         reflectance = self.reflectance
         radiance = irradiance * reflectance[None, :] / math.pi * 1e6
@@ -250,21 +225,11 @@ class PhotometryModel:
         display = camera_linear / (1. + camera_linear)
         display = torch.clamp(display, 0., 1.)
 
-        camera_matrix = None
-        if need_linear_matrix:
-            # B = eta*g*M*(1e6/pi)*diag(rho)*sum_j(b_j P_j omega_j^T).
-            row_scale = reflectance * (1e6 / math.pi)
-            radiance_matrix = coefficient * row_scale[None, :, None]
-            camera_matrix = torch.matmul(self.camera_response[None, :, :], radiance_matrix)
-            camera_matrix = camera_matrix * (camera_factor * self.exposure)[:, None, None]
-
         return (radiance, camera_linear, display, camera_factor,
                 torch.cat(active_blocks, dim=1) if active_blocks else
-                torch.zeros((len(points), 0), device=self.device, dtype=torch.bool),
-                camera_matrix)
+                torch.zeros((len(points), 0), device=self.device, dtype=torch.bool))
 
-    def _evaluate_tensors(self, points_mm, geometric_normals, *, state_config=None,
-                          need_linear_matrix: bool = False):
+    def _evaluate_tensors(self, points_mm, geometric_normals, *, state_config=None):
         torch = self.torch
         state = self._validate_state(state_config)
         points_np = np.asarray(points_mm, dtype=np.float64)
@@ -280,7 +245,7 @@ class PhotometryModel:
         normals = torch.as_tensor(normals_np, device=self.device, dtype=self.geometry_dtype)
         # The renderer maps geometric surface normals to its optical normal using this sign.
         normal_optical = normals * float(state['surface']['view_side_z'])
-        return self._shade(points, normal_optical, state, need_linear_matrix=need_linear_matrix)
+        return self._shade(points, normal_optical, state)
 
     @staticmethod
     def _host(value):
@@ -298,7 +263,7 @@ class PhotometryModel:
             return PhotometryResponse(empty3, empty3.copy(), empty3.copy(),
                                       np.empty(0, np.float32), np.empty(0, bool),
                                       np.empty((0, len(self.light_points)), bool))
-        radiance, camera_linear, display, camera_factor, active, _ = self._evaluate_tensors(
+        radiance, camera_linear, display, camera_factor, active = self._evaluate_tensors(
             points, normals, state_config=state_config)
         display_host = self._host(display)
         radiance_host = self._host(radiance)

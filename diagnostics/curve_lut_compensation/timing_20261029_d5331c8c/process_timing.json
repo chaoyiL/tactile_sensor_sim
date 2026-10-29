@@ -1,0 +1,35 @@
+{
+  "run_id": "timing_20261029_d5331c8c",
+  "command": [
+    "D:\\Projects\\tactile_sensor_sim\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "experiment.curve_lut_compensation",
+    "--lut-results",
+    "results_lut/analytic",
+    "--transfer-results",
+    "results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400",
+    "--exp-config",
+    "configs/curve_lut_compensation.json",
+    "--out",
+    "results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c"
+  ],
+  "output": "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c",
+  "log": "D:\\Projects\\tactile_sensor_sim\\diagnostics\\curve_lut_compensation\\timing_20261029_d5331c8c\\full_run.log",
+  "started_at_utc": "2026-10-29T03:08:55.426540+00:00",
+  "completed_at_utc": "2026-10-29T03:19:51.855757+00:00",
+  "process_wall_seconds": 656.4290699999547,
+  "exit_code": 0,
+  "repeats": 1,
+  "run_mode": "fresh",
+  "protected_inputs_unchanged": true,
+  "scope": "Child Python process launch through exit, including imports and final artifact/manifest writes",
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 197 Stepping 2, GenuineIntel",
+    "logical_cpu_count": 16,
+    "gpu_before": "name, driver_version, memory.total [MiB], memory.used [MiB], utilization.gpu [%], power.draw [W]\nNVIDIA GeForce RTX 5050 Laptop GPU, 610.62, 8151 MiB, 195 MiB, 0 %, 3.88 W",
+    "free_disk_bytes_before": 169955831808
+  }
+}

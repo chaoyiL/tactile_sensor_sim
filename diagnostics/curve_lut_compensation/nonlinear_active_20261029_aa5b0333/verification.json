@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "completed_pose_checkpoints": 504,
+  "metric_groups": 56,
+  "baseline_rmse_exact_reproduction": true,
+  "input_hash_checks": {
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\manifest.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\normal_lut.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\normal_lut_train.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\normal_samples.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\manifest.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\config_snapshot.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\split.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\metrics.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\samples\\flat\\reference.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\samples\\radius_200\\reference.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\samples\\radius_100\\reference.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\samples\\radius_50\\reference.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\manifest.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\metrics.json": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\calibration\\flat\\normal_lut.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\calibration\\radius_200\\normal_lut.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\calibration\\radius_100\\normal_lut.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\calibration\\radius_50\\normal_lut.npz": true,
+    "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\timing_20261029_d5331c8c\\runtime.json": true
+  },
+  "completed_resume_files_unchanged": 516,
+  "completed_resume_torch_imported": false,
+  "related_tests": {
+    "count": 48,
+    "elapsed_seconds": 25.504,
+    "passed": true
+  },
+  "benchmark_fresh": true,
+  "benchmark_samples_per_method_condition": 630,
+  "figure_copy_with_explicit_radius_units": "diagnostics\\curve_lut_compensation\\nonlinear_active_20261029_aa5b0333\\figures\\accuracy_speed.png",
+  "gpu_photometry_validation": "gpu_photometry_validation.json",
+  "historical_test_archive_hashes_matched": 504
+}

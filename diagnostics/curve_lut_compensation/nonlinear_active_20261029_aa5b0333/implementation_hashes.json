@@ -1,0 +1,10 @@
+{
+  "experiment/config.py": "40c7ff185673f1e06d27186f2bb1b02d08a98797de030f5dbcd894b7f962ca33",
+  "configs/curve_lut_compensation.json": "c51d9213a8bdb6130e43f4b49b74ec7e91dddf1953c56b9825deef878255f596",
+  "experiment/curve_lut_compensation/runner.py": "63be9127870ad46095542805264c96c9c761c0a4af0c831b208038981548150d",
+  "experiment/curve_lut_compensation/comparison.py": "2a146407e639d286373535425ddfa79589b174dd4d7dce4d774d459db7feea29",
+  "experiment/curve_lut_compensation/nonlinear.py": "4d3b7afe0b30bb8ef5201391faa464877758d5eac1c252021ac9b56c8a12868a",
+  "experiment/curve_lut_compensation/photometry.py": "56c27c62725b592c04f8d8f23b31800e9e8c4b059cbf96457cf7991daee40afc",
+  "experiment/curve_lut_compensation/transfer.py": "025add1c2285fa7132d634324065aefd1bccf820ddce6e2967345c2822bb102b",
+  "tests/test_curve_lut_compensation.py": "4d9879f16d592c4cacfc6a06424f03e95e0beca848192d51a8f85f25e5564cfc"
+}

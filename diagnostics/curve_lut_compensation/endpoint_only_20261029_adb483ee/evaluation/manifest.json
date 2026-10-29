@@ -1,0 +1,90 @@
+{
+  "status": "evaluation_only_with_existing_published_endpoint_luts",
+  "calibration": {
+    "flat": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_200": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_100": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_50": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    }
+  },
+  "training_diagnostics": {
+    "flat": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "flat",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.0,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 1.0,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2279043,
+      "total_target_observed_samples": 2279043,
+      "total_target_domain_gap_samples": 0,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_200": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_200",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.016839660711651876,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 0.9998885263437784,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2254308,
+      "total_target_observed_samples": 2254561,
+      "total_target_domain_gap_samples": 253,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_100": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_100",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.01856323067561791,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 0.9999166130588097,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2231521,
+      "total_target_observed_samples": 2231690,
+      "total_target_domain_gap_samples": 169,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_50": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_50",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.01776303747876037,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 1.0,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2177783,
+      "total_target_observed_samples": 2177783,
+      "total_target_domain_gap_samples": 0,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    }
+  },
+  "completed": {},
+  "reused_lut_source": "D:\\Projects\\tactile_sensor_sim\\results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01",
+  "note": "No complete scan or refit; archived endpoint LUTs and all 504 independent test observations are reused."
+}

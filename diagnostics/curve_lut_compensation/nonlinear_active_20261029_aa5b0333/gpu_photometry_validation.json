@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "comparison": "fixed reference X0, changed finite normal, production optics; reference visibility",
+  "rtol": 1e-05,
+  "atol": 2e-06,
+  "conditions": [
+    {
+      "radius_mm": null,
+      "point_count": 4,
+      "linear_rgb_max_abs": 2.1619942369710543e-07,
+      "display_rgb_max_abs": 5.947438708187036e-08,
+      "shadows": true,
+      "device": "cuda:0"
+    },
+    {
+      "radius_mm": 200.0,
+      "point_count": 4,
+      "linear_rgb_max_abs": 1.5182172097283342e-07,
+      "display_rgb_max_abs": 8.02207931194232e-08,
+      "shadows": true,
+      "device": "cuda:0"
+    },
+    {
+      "radius_mm": 100.0,
+      "point_count": 4,
+      "linear_rgb_max_abs": 2.379447907596699e-07,
+      "display_rgb_max_abs": 6.244102668251372e-08,
+      "shadows": true,
+      "device": "cuda:0"
+    },
+    {
+      "radius_mm": 50.0,
+      "point_count": 4,
+      "linear_rgb_max_abs": 1.3264216325303835e-07,
+      "display_rgb_max_abs": 5.7397817165849574e-08,
+      "shadows": true,
+      "device": "cuda:0"
+    }
+  ]
+}

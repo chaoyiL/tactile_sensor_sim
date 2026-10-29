@@ -1,0 +1,124 @@
+{
+  "format_version": 1,
+  "session_id": "20261029T042450_817207Z_b15fc0da",
+  "status": "completed",
+  "status_scope": "Status describes the measured phases only; final runtime/checkpoint writes are outside this scope. Run completion is recorded in manifest.json.",
+  "run_mode": "archived_lut_reevaluation",
+  "device": "cpu",
+  "current_invocation_only": true,
+  "time_range_description": "wall_seconds runs from RunTimings construction to report generation; it excludes earlier process/import startup.",
+  "phase_timing_scope": "Phase wall time includes the phase body, including its reads, writes, and checkpoints; initial CUDA synchronization is outside the interval, final synchronization is inside it.",
+  "started_at_utc": "2026-10-29T04:24:50.817169+00:00",
+  "updated_at_utc": "2026-10-29T04:25:02.106507+00:00",
+  "wall_seconds": 11.28936860000249,
+  "stage_seconds": {
+    "evaluation": 10.50139270001091,
+    "plotting": 0.7809107999783009
+  },
+  "entries": [
+    {
+      "stage": "evaluation",
+      "condition": null,
+      "started_at_utc": "2026-10-29T04:24:50.819985+00:00",
+      "ended_at_utc": "2026-10-29T04:25:01.321378+00:00",
+      "seconds": 10.50139270001091,
+      "status": "completed"
+    },
+    {
+      "stage": "plotting",
+      "condition": null,
+      "started_at_utc": "2026-10-29T04:25:01.323595+00:00",
+      "ended_at_utc": "2026-10-29T04:25:02.104507+00:00",
+      "seconds": 0.7809107999783009,
+      "status": "completed"
+    }
+  ],
+  "query_summary": {
+    "endpoint_migrated_lut/flat": {
+      "method": "endpoint_migrated_lut",
+      "condition": "flat",
+      "seconds": 0.16378570056986064,
+      "calls": 126,
+      "sample_count": 432998
+    },
+    "endpoint_migrated_lut/radius_100": {
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_100",
+      "seconds": 0.16463300038594753,
+      "calls": 126,
+      "sample_count": 422776
+    },
+    "endpoint_migrated_lut/radius_200": {
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_200",
+      "seconds": 0.16367930034175515,
+      "calls": 126,
+      "sample_count": 427808
+    },
+    "endpoint_migrated_lut/radius_50": {
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_50",
+      "seconds": 0.15375619928818196,
+      "calls": 126,
+      "sample_count": 413172
+    },
+    "frozen_flat_lut/flat": {
+      "method": "frozen_flat_lut",
+      "condition": "flat",
+      "seconds": 0.16446800052653998,
+      "calls": 126,
+      "sample_count": 432998
+    },
+    "frozen_flat_lut/radius_100": {
+      "method": "frozen_flat_lut",
+      "condition": "radius_100",
+      "seconds": 0.16329280042555183,
+      "calls": 126,
+      "sample_count": 422776
+    },
+    "frozen_flat_lut/radius_200": {
+      "method": "frozen_flat_lut",
+      "condition": "radius_200",
+      "seconds": 0.17169649992138147,
+      "calls": 126,
+      "sample_count": 427808
+    },
+    "frozen_flat_lut/radius_50": {
+      "method": "frozen_flat_lut",
+      "condition": "radius_50",
+      "seconds": 0.16149069904349744,
+      "calls": 126,
+      "sample_count": 413172
+    },
+    "historical_same_curvature_lut/flat": {
+      "method": "historical_same_curvature_lut",
+      "condition": "flat",
+      "seconds": 0.16710419952869415,
+      "calls": 126,
+      "sample_count": 432998
+    },
+    "historical_same_curvature_lut/radius_100": {
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_100",
+      "seconds": 0.16529470041859895,
+      "calls": 126,
+      "sample_count": 422776
+    },
+    "historical_same_curvature_lut/radius_200": {
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_200",
+      "seconds": 0.1689631997141987,
+      "calls": 126,
+      "sample_count": 427808
+    },
+    "historical_same_curvature_lut/radius_50": {
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_50",
+      "seconds": 0.16147690126672387,
+      "calls": 126,
+      "sample_count": 413172
+    }
+  },
+  "query_timing_scope": "CPU/NumPy _predict_method prediction and LUT query only; excludes sample loading, metric aggregation, bootstrap, plotting, and output. Evaluation-domain subsets reuse predictions, so subset timings are not additive. Query totals overlap their enclosing phase and must not be added to stage_seconds.",
+  "full_run_note": "A full from-zero runtime is valid only for a fresh output with no reused checkpoints; resumed timings describe this invocation only."
+}

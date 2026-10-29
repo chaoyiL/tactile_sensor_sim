@@ -1,0 +1,5888 @@
+{
+  "version": "curve_lut_compensation_v2",
+  "status": "completed",
+  "conditions": {
+    "flat": null,
+    "radius_200": 200.0,
+    "radius_100": 100.0,
+    "radius_50": 50.0
+  },
+  "methods": [
+    "frozen_flat_lut",
+    "endpoint_migrated_lut",
+    "historical_same_curvature_lut"
+  ],
+  "domains": [
+    "full",
+    "common"
+  ],
+  "metrics": {
+    "frozen_flat_lut/flat/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.14978111112341572,
+      "angular_rmse_degrees": 7.460302834001378,
+      "p95": 0.31864440865792576,
+      "angular_p95_degrees": 15.705058885663957,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2967865014929104,
+      "exceedance": {
+        "0.025": 0.9191672069348176,
+        "0.05": 0.7292513521660019,
+        "0.1": 0.3822841541801578,
+        "0.2": 0.13629768637155526
+      },
+      "bias_p": -0.0006146077679880448,
+      "bias_q": -0.003117027188040055,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23331811959031892,
+      "method": "frozen_flat_lut",
+      "condition": "flat",
+      "domain": "full"
+    },
+    "frozen_flat_lut/flat/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13993810166838178,
+      "angular_rmse_degrees": 7.058998839447517,
+      "p95": 0.29016214735366336,
+      "angular_p95_degrees": 14.57590022184177,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2854931593898788,
+      "exceedance": {
+        "0.025": 0.9168695688401198,
+        "0.05": 0.7218721770215626,
+        "0.1": 0.36539902418439546,
+        "0.2": 0.11836880545135388
+      },
+      "bias_p": -0.0006470055391682968,
+      "bias_q": -0.0027922092490046155,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23287566827977932,
+      "method": "frozen_flat_lut",
+      "condition": "flat",
+      "domain": "common"
+    },
+    "frozen_flat_lut/radius_200/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.16014950700087957,
+      "angular_rmse_degrees": 7.825147534610806,
+      "p95": 0.3330308574998566,
+      "angular_p95_degrees": 16.053558101628507,
+      "worst_pose": "test_000113",
+      "worst_pose_rmse": 0.29142022304036175,
+      "exceedance": {
+        "0.025": 0.9158564240298954,
+        "0.05": 0.74785712515865,
+        "0.1": 0.47383022644379896,
+        "0.2": 0.17093600549698562
+      },
+      "bias_p": -2.9044671873393237e-05,
+      "bias_q": -0.019424550687374028,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2747382599965069,
+      "method": "frozen_flat_lut",
+      "condition": "radius_200",
+      "domain": "full"
+    },
+    "frozen_flat_lut/radius_200/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.1499904003559928,
+      "angular_rmse_degrees": 7.394640988499614,
+      "p95": 0.30531766262461807,
+      "angular_p95_degrees": 14.918392168820116,
+      "worst_pose": "test_000113",
+      "worst_pose_rmse": 0.2796307607455903,
+      "exceedance": {
+        "0.025": 0.9132759053328305,
+        "0.05": 0.7402768650836992,
+        "0.1": 0.4591594077041921,
+        "0.2": 0.15231289626576539
+      },
+      "bias_p": -2.293243942824223e-05,
+      "bias_q": -0.019104792536173344,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2758553464739192,
+      "method": "frozen_flat_lut",
+      "condition": "radius_200",
+      "domain": "common"
+    },
+    "frozen_flat_lut/radius_100/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.1719142191366038,
+      "angular_rmse_degrees": 8.375086819236051,
+      "p95": 0.35869328125374483,
+      "angular_p95_degrees": 17.076487061415335,
+      "worst_pose": "test_000001",
+      "worst_pose_rmse": 0.29925879155913687,
+      "exceedance": {
+        "0.025": 0.9246328234874147,
+        "0.05": 0.7762005344995269,
+        "0.1": 0.5104873597880746,
+        "0.2": 0.20679150479035688
+      },
+      "bias_p": -0.0001880213439740056,
+      "bias_q": -0.022198339286574345,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2877738300114123,
+      "method": "frozen_flat_lut",
+      "condition": "radius_100",
+      "domain": "full"
+    },
+    "frozen_flat_lut/radius_100/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.1638655284138692,
+      "angular_rmse_degrees": 8.029847703316637,
+      "p95": 0.3382997796052046,
+      "angular_p95_degrees": 16.248624862783625,
+      "worst_pose": "test_000001",
+      "worst_pose_rmse": 0.29194790010841853,
+      "exceedance": {
+        "0.025": 0.9230020595185875,
+        "0.05": 0.7713795603805574,
+        "0.1": 0.500481402325133,
+        "0.2": 0.19273759114870587
+      },
+      "bias_p": -0.00011781484199150086,
+      "bias_q": -0.022014603917538976,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.28849079901051583,
+      "method": "frozen_flat_lut",
+      "condition": "radius_100",
+      "domain": "common"
+    },
+    "frozen_flat_lut/radius_50/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.19634772622872856,
+      "angular_rmse_degrees": 9.524434577464268,
+      "p95": 0.4007104770007194,
+      "angular_p95_degrees": 18.911940596264163,
+      "worst_pose": "test_000113",
+      "worst_pose_rmse": 0.3218784475830808,
+      "exceedance": {
+        "0.025": 0.9445667764202595,
+        "0.05": 0.8159262106731708,
+        "0.1": 0.5792213364096733,
+        "0.2": 0.281267866256795
+      },
+      "bias_p": -5.437013775599038e-05,
+      "bias_q": -0.02155422026445343,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2853757394159723,
+      "method": "frozen_flat_lut",
+      "condition": "radius_50",
+      "domain": "full"
+    },
+    "frozen_flat_lut/radius_50/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.19634772622872856,
+      "angular_rmse_degrees": 9.524434577464268,
+      "p95": 0.4007104770007194,
+      "angular_p95_degrees": 18.911940596264163,
+      "worst_pose": "test_000113",
+      "worst_pose_rmse": 0.3218784475830808,
+      "exceedance": {
+        "0.025": 0.9445667764202595,
+        "0.05": 0.8159262106731708,
+        "0.1": 0.5792213364096733,
+        "0.2": 0.281267866256795
+      },
+      "bias_p": -5.437013775599038e-05,
+      "bias_q": -0.02155422026445343,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2853757394159723,
+      "method": "frozen_flat_lut",
+      "condition": "radius_50",
+      "domain": "common"
+    },
+    "endpoint_migrated_lut/flat/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.14978111112341572,
+      "angular_rmse_degrees": 7.460302834001378,
+      "p95": 0.31864440865792576,
+      "angular_p95_degrees": 15.705058885663957,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2967865014929104,
+      "exceedance": {
+        "0.025": 0.9191672069348176,
+        "0.05": 0.7292513521660019,
+        "0.1": 0.3822841541801578,
+        "0.2": 0.13629768637155526
+      },
+      "bias_p": -0.0006146077679880448,
+      "bias_q": -0.003117027188040055,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23331811959031892,
+      "method": "endpoint_migrated_lut",
+      "condition": "flat",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/flat/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13993810166838178,
+      "angular_rmse_degrees": 7.058998839447517,
+      "p95": 0.29016214735366336,
+      "angular_p95_degrees": 14.57590022184177,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2854931593898788,
+      "exceedance": {
+        "0.025": 0.9168695688401198,
+        "0.05": 0.7218721770215626,
+        "0.1": 0.36539902418439546,
+        "0.2": 0.11836880545135388
+      },
+      "bias_p": -0.0006470055391682968,
+      "bias_q": -0.0027922092490046155,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23287566827977932,
+      "method": "endpoint_migrated_lut",
+      "condition": "flat",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_200/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13813640010188324,
+      "angular_rmse_degrees": 6.791577272209248,
+      "p95": 0.2925983752903154,
+      "angular_p95_degrees": 14.236918940336734,
+      "worst_pose": "test_000113",
+      "worst_pose_rmse": 0.26739352587081117,
+      "exceedance": {
+        "0.025": 0.9091236471069517,
+        "0.05": 0.7065591152501542,
+        "0.1": 0.3487358852958295,
+        "0.2": 0.11616769586755868
+      },
+      "bias_p": -0.00046720831403718747,
+      "bias_q": -0.002629370407743466,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2630040503997588,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_200",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_200/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.12810398734565376,
+      "angular_rmse_degrees": 6.375334664675166,
+      "p95": 0.26487515527606237,
+      "angular_p95_degrees": 13.083426033852525,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.25663371381782774,
+      "exceedance": {
+        "0.025": 0.9067822248827532,
+        "0.05": 0.6991270551041573,
+        "0.1": 0.3324905838680539,
+        "0.2": 0.09869180847494291
+      },
+      "bias_p": -0.00041560963486139506,
+      "bias_q": -0.0022501209541932986,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2642150917156557,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_200",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_100/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13706479831965968,
+      "angular_rmse_degrees": 6.711606504890124,
+      "p95": 0.28532643307933636,
+      "angular_p95_degrees": 13.87024483315739,
+      "worst_pose": "test_000001",
+      "worst_pose_rmse": 0.26109375360281695,
+      "exceedance": {
+        "0.025": 0.909737056835764,
+        "0.05": 0.7073733181456568,
+        "0.1": 0.35512425422976746,
+        "0.2": 0.11406176447123487
+      },
+      "bias_p": 0.000508264481604265,
+      "bias_q": -0.00016844561560316708,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2636934753795238,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_100",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_100/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.12855071018364056,
+      "angular_rmse_degrees": 6.355690765907384,
+      "p95": 0.26198291448028754,
+      "angular_p95_degrees": 12.948398874869108,
+      "worst_pose": "test_000001",
+      "worst_pose_rmse": 0.2539112913960318,
+      "exceedance": {
+        "0.025": 0.9080075104052238,
+        "0.05": 0.7018060719726594,
+        "0.1": 0.34315798865354546,
+        "0.2": 0.1002498923130759
+      },
+      "bias_p": 0.0006112302384487827,
+      "bias_q": 0.00022981667290245737,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2652021609272609,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_100",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_50/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.15180696498836566,
+      "angular_rmse_degrees": 7.362469985540291,
+      "p95": 0.3174088858553259,
+      "angular_p95_degrees": 15.4110001279531,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.27061933154214324,
+      "exceedance": {
+        "0.025": 0.9157612476748151,
+        "0.05": 0.7256015135970804,
+        "0.1": 0.4088885301363235,
+        "0.2": 0.15756417729891814
+      },
+      "bias_p": 0.0005710387936252457,
+      "bias_q": 0.009624918594876922,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.22553592240620354,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_50",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "endpoint_migrated_lut/radius_50/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.15180696498836566,
+      "angular_rmse_degrees": 7.362469985540291,
+      "p95": 0.3174088858553259,
+      "angular_p95_degrees": 15.4110001279531,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.27061933154214324,
+      "exceedance": {
+        "0.025": 0.9157612476748151,
+        "0.05": 0.7256015135970804,
+        "0.1": 0.4088885301363235,
+        "0.2": 0.15756417729891814
+      },
+      "bias_p": 0.0005710387936252457,
+      "bias_q": 0.009624918594876922,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.22553592240620354,
+      "method": "endpoint_migrated_lut",
+      "condition": "radius_50",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/flat/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.14978111112341572,
+      "angular_rmse_degrees": 7.460302834001378,
+      "p95": 0.31864440865792576,
+      "angular_p95_degrees": 15.705058885663957,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2967865014929104,
+      "exceedance": {
+        "0.025": 0.9191672069348176,
+        "0.05": 0.7292513521660019,
+        "0.1": 0.3822841541801578,
+        "0.2": 0.13629768637155526
+      },
+      "bias_p": -0.0006146077679880448,
+      "bias_q": -0.003117027188040055,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23331811959031892,
+      "method": "historical_same_curvature_lut",
+      "condition": "flat",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/flat/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13993810166838178,
+      "angular_rmse_degrees": 7.058998839447517,
+      "p95": 0.29016214735366336,
+      "angular_p95_degrees": 14.57590022184177,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2854931593898788,
+      "exceedance": {
+        "0.025": 0.9168695688401198,
+        "0.05": 0.7218721770215626,
+        "0.1": 0.36539902418439546,
+        "0.2": 0.11836880545135388
+      },
+      "bias_p": -0.0006470055391682968,
+      "bias_q": -0.0027922092490046155,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.23287566827977932,
+      "method": "historical_same_curvature_lut",
+      "condition": "flat",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_200/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13837659785240197,
+      "angular_rmse_degrees": 6.804577703278353,
+      "p95": 0.2921122306067488,
+      "angular_p95_degrees": 14.23167047941778,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.27271576566995775,
+      "exceedance": {
+        "0.025": 0.9104071432303984,
+        "0.05": 0.7081844092109214,
+        "0.1": 0.34860201353664366,
+        "0.2": 0.11642065632031944
+      },
+      "bias_p": 9.816746783084712e-05,
+      "bias_q": -0.0021369124535311384,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2623631866157971,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_200",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_200/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.12840088487599402,
+      "angular_rmse_degrees": 6.390783832026043,
+      "p95": 0.2645926867810699,
+      "angular_p95_degrees": 13.102622204297644,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.26246373874388174,
+      "exceedance": {
+        "0.025": 0.9081467097986813,
+        "0.05": 0.7008046011368373,
+        "0.1": 0.3324060809422617,
+        "0.2": 0.09900033779241627
+      },
+      "bias_p": 0.0001470451118706159,
+      "bias_q": -0.0017583371725346662,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2638124512140142,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_200",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_100/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.13731992833941672,
+      "angular_rmse_degrees": 6.7270443322458995,
+      "p95": 0.28384220486311956,
+      "angular_p95_degrees": 13.802835241897498,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2600088484360605,
+      "exceedance": {
+        "0.025": 0.9095237695513688,
+        "0.05": 0.7112100790563438,
+        "0.1": 0.35967455422776645,
+        "0.2": 0.11280970444565136
+      },
+      "bias_p": -0.0003478417445206859,
+      "bias_q": -0.00014953797736790638,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.2571785601712836,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_100",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_100/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.12894011856341636,
+      "angular_rmse_degrees": 6.377058433086602,
+      "p95": 0.26078773224273866,
+      "angular_p95_degrees": 12.895143535670309,
+      "worst_pose": "test_000125",
+      "worst_pose_rmse": 0.2523167595196451,
+      "exceedance": {
+        "0.025": 0.907800902543004,
+        "0.05": 0.7057927239445936,
+        "0.1": 0.34786405432017753,
+        "0.2": 0.09908564249152696
+      },
+      "bias_p": -0.00023208645244345325,
+      "bias_q": 0.00025650675502911555,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.25880131074983737,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_100",
+      "domain": "common",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_50/full": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.15247061463086634,
+      "angular_rmse_degrees": 7.384211290506685,
+      "p95": 0.31798955692374337,
+      "angular_p95_degrees": 15.401441532412157,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.2674904934150812,
+      "exceedance": {
+        "0.025": 0.9201912726555642,
+        "0.05": 0.7354307347244947,
+        "0.1": 0.4171329105238577,
+        "0.2": 0.16025113761091295
+      },
+      "bias_p": 0.0015239730226838963,
+      "bias_q": 0.011918057040585907,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.21035384586447714,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_50",
+      "domain": "full",
+      "lut_status": "passed"
+    },
+    "historical_same_curvature_lut/radius_50/common": {
+      "status": "ok",
+      "failed_poses": [],
+      "pose_count": 126,
+      "rmse": 0.15247061463086634,
+      "angular_rmse_degrees": 7.384211290506685,
+      "p95": 0.31798955692374337,
+      "angular_p95_degrees": 15.401441532412157,
+      "worst_pose": "test_000013",
+      "worst_pose_rmse": 0.2674904934150812,
+      "exceedance": {
+        "0.025": 0.9201912726555642,
+        "0.05": 0.7354307347244947,
+        "0.1": 0.4171329105238577,
+        "0.2": 0.16025113761091295
+      },
+      "bias_p": 0.0015239730226838963,
+      "bias_q": 0.011918057040585907,
+      "out_of_range_fraction": 0.0,
+      "original_support_fraction": 0.21035384586447714,
+      "method": "historical_same_curvature_lut",
+      "condition": "radius_50",
+      "domain": "common",
+      "lut_status": "passed"
+    }
+  },
+  "evaluation_settings": {
+    "radii_mm": [
+      null,
+      200.0,
+      100.0,
+      50.0
+    ],
+    "reference_pairing": "material",
+    "metrics": {
+      "aggregation": "pose_equal_reference_area",
+      "slope_tolerances": [
+        0.025,
+        0.05,
+        0.1,
+        0.2
+      ],
+      "bootstrap_repeats": 2000,
+      "seed": 42
+    },
+    "chunk_size": 8192
+  },
+  "scope_transitions": [],
+  "comparisons": {
+    "flat": {
+      "endpoint_migrated_lut/common": {
+        "status": "ok",
+        "difference": 0.0,
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      },
+      "historical_same_curvature_lut/common": {
+        "status": "ok",
+        "difference": 0.0,
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      }
+    },
+    "radius_200": {
+      "endpoint_migrated_lut/common": {
+        "status": "ok",
+        "difference": -0.02188641301033903,
+        "interval_95": [
+          -0.024913795192580523,
+          -0.019264731018042103
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      },
+      "historical_same_curvature_lut/common": {
+        "status": "ok",
+        "difference": -0.021589515479998767,
+        "interval_95": [
+          -0.024689724133922675,
+          -0.018808538209047328
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      }
+    },
+    "radius_100": {
+      "endpoint_migrated_lut/common": {
+        "status": "ok",
+        "difference": -0.03531481823022864,
+        "interval_95": [
+          -0.03853071610370897,
+          -0.03237382720344774
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      },
+      "historical_same_curvature_lut/common": {
+        "status": "ok",
+        "difference": -0.03492540985045284,
+        "interval_95": [
+          -0.038132516039971184,
+          -0.03194482031071502
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      }
+    },
+    "radius_50": {
+      "endpoint_migrated_lut/common": {
+        "status": "ok",
+        "difference": -0.04454076124036291,
+        "interval_95": [
+          -0.047171826904322756,
+          -0.041923518140146145
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      },
+      "historical_same_curvature_lut/common": {
+        "status": "ok",
+        "difference": -0.04387711159786223,
+        "interval_95": [
+          -0.04678523317260703,
+          -0.04110477691907527
+        ],
+        "anchor_count": 63,
+        "repeats": 2000,
+        "seed": 42
+      }
+    }
+  },
+  "coverage": [
+    {
+      "condition": "flat",
+      "pose_id": "test_000000",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.509999999999998,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9524707657487741,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000001",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.269999999999996,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.955524012301869,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000002",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.509999999999998,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9524707657487741,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000003",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9555240123018689,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000004",
+      "valid_test_samples": 2650,
+      "common_samples": 2518,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9501886792452832,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000005",
+      "valid_test_samples": 4220,
+      "common_samples": 4029,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9547393364928911,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000006",
+      "valid_test_samples": 2642,
+      "common_samples": 2521,
+      "full_area_mm2": 26.42,
+      "common_area_mm2": 25.210000000000004,
+      "common_area_fraction": 0.9542013626040879,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000007",
+      "valid_test_samples": 4213,
+      "common_samples": 4034,
+      "full_area_mm2": 42.13000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9575124614289106,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000008",
+      "valid_test_samples": 2650,
+      "common_samples": 2518,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.950188679245283,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000009",
+      "valid_test_samples": 4220,
+      "common_samples": 4029,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9547393364928911,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000010",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.509999999999998,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9524707657487741,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000011",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9555240123018689,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000012",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.509999999999998,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.9524707657487742,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000013",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.955524012301869,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000014",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981131,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000015",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9566247926048828,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000016",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.230000000000008,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000017",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9566247926048828,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000018",
+      "valid_test_samples": 2649,
+      "common_samples": 2522,
+      "full_area_mm2": 26.490000000000006,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9520573801434504,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000019",
+      "valid_test_samples": 4220,
+      "common_samples": 4034,
+      "full_area_mm2": 42.20000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9559241706161138,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000020",
+      "valid_test_samples": 2646,
+      "common_samples": 2521,
+      "full_area_mm2": 26.460000000000008,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.95275888133031,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000021",
+      "valid_test_samples": 4221,
+      "common_samples": 4030,
+      "full_area_mm2": 42.21000000000001,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9547500592276713,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000022",
+      "valid_test_samples": 2649,
+      "common_samples": 2522,
+      "full_area_mm2": 26.490000000000002,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9520573801434505,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000023",
+      "valid_test_samples": 4220,
+      "common_samples": 4034,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9559241706161139,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000024",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981132,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000025",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9566247926048828,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000026",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.23000000000001,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000027",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9566247926048828,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000028",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000029",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.190000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961128,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000030",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.23,
+      "common_area_fraction": 0.9520754716981131,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000031",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.190000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961128,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000032",
+      "valid_test_samples": 2651,
+      "common_samples": 2518,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.949830252734817,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000033",
+      "valid_test_samples": 4220,
+      "common_samples": 4037,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9566350710900476,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000034",
+      "valid_test_samples": 2654,
+      "common_samples": 2517,
+      "full_area_mm2": 26.540000000000006,
+      "common_area_mm2": 25.170000000000005,
+      "common_area_fraction": 0.9483798040693293,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000035",
+      "valid_test_samples": 4227,
+      "common_samples": 4034,
+      "full_area_mm2": 42.27,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9543411402886209,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000036",
+      "valid_test_samples": 2651,
+      "common_samples": 2518,
+      "full_area_mm2": 26.51,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.949830252734817,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000037",
+      "valid_test_samples": 4220,
+      "common_samples": 4037,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9566350710900474,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000038",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000039",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961129,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000040",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981131,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000041",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961129,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000042",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.24,
+      "common_area_fraction": 0.9499435453519006,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000043",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939394,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000044",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9499435453519007,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000045",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939392,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000046",
+      "valid_test_samples": 2650,
+      "common_samples": 2524,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9524528301886789,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000047",
+      "valid_test_samples": 4219,
+      "common_samples": 4040,
+      "full_area_mm2": 42.19,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9575728845698035,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000048",
+      "valid_test_samples": 2658,
+      "common_samples": 2518,
+      "full_area_mm2": 26.580000000000005,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.9473288186606469,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000049",
+      "valid_test_samples": 4230,
+      "common_samples": 4040,
+      "full_area_mm2": 42.3,
+      "common_area_mm2": 40.4,
+      "common_area_fraction": 0.9550827423167849,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000050",
+      "valid_test_samples": 2650,
+      "common_samples": 2524,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9524528301886791,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000051",
+      "valid_test_samples": 4219,
+      "common_samples": 4040,
+      "full_area_mm2": 42.19,
+      "common_area_mm2": 40.39999999999999,
+      "common_area_fraction": 0.9575728845698032,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000052",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9499435453519004,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000053",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24,
+      "common_area_mm2": 40.33999999999999,
+      "common_area_fraction": 0.9550189393939391,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000054",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9499435453519007,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000055",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939394,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000056",
+      "valid_test_samples": 2652,
+      "common_samples": 2522,
+      "full_area_mm2": 26.52,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9509803921568627,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000057",
+      "valid_test_samples": 4220,
+      "common_samples": 4036,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9563981042654027,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000058",
+      "valid_test_samples": 2652,
+      "common_samples": 2522,
+      "full_area_mm2": 26.52,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9509803921568627,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000059",
+      "valid_test_samples": 4220,
+      "common_samples": 4036,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.956398104265403,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000060",
+      "valid_test_samples": 2650,
+      "common_samples": 2530,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.3,
+      "common_area_fraction": 0.9547169811320754,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000061",
+      "valid_test_samples": 4226,
+      "common_samples": 4036,
+      "full_area_mm2": 42.26,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.955040227165168,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000062",
+      "valid_test_samples": 2654,
+      "common_samples": 2524,
+      "full_area_mm2": 26.54,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9510173323285608,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000063",
+      "valid_test_samples": 4230,
+      "common_samples": 4038,
+      "full_area_mm2": 42.3,
+      "common_area_mm2": 40.379999999999995,
+      "common_area_fraction": 0.9546099290780141,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000064",
+      "valid_test_samples": 2650,
+      "common_samples": 2530,
+      "full_area_mm2": 26.499999999999996,
+      "common_area_mm2": 25.299999999999997,
+      "common_area_fraction": 0.9547169811320755,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000065",
+      "valid_test_samples": 4226,
+      "common_samples": 4036,
+      "full_area_mm2": 42.25999999999999,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9550402271651682,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000066",
+      "valid_test_samples": 2652,
+      "common_samples": 2522,
+      "full_area_mm2": 26.519999999999996,
+      "common_area_mm2": 25.219999999999995,
+      "common_area_fraction": 0.9509803921568627,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000067",
+      "valid_test_samples": 4220,
+      "common_samples": 4036,
+      "full_area_mm2": 42.199999999999996,
+      "common_area_mm2": 40.35999999999999,
+      "common_area_fraction": 0.9563981042654027,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000068",
+      "valid_test_samples": 2652,
+      "common_samples": 2522,
+      "full_area_mm2": 26.520000000000003,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9509803921568627,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000069",
+      "valid_test_samples": 4220,
+      "common_samples": 4036,
+      "full_area_mm2": 42.2,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9563981042654027,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000070",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9499435453519008,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000071",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939394,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000072",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9499435453519007,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000073",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939392,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000074",
+      "valid_test_samples": 2650,
+      "common_samples": 2524,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9524528301886794,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000075",
+      "valid_test_samples": 4219,
+      "common_samples": 4040,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9575728845698032,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000076",
+      "valid_test_samples": 2658,
+      "common_samples": 2518,
+      "full_area_mm2": 26.58,
+      "common_area_mm2": 25.180000000000007,
+      "common_area_fraction": 0.9473288186606474,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000077",
+      "valid_test_samples": 4230,
+      "common_samples": 4040,
+      "full_area_mm2": 42.30000000000001,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9550827423167847,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000078",
+      "valid_test_samples": 2650,
+      "common_samples": 2524,
+      "full_area_mm2": 26.499999999999993,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9524528301886795,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000079",
+      "valid_test_samples": 4219,
+      "common_samples": 4040,
+      "full_area_mm2": 42.19,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9575728845698035,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000080",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9499435453519007,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000081",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939394,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000082",
+      "valid_test_samples": 2657,
+      "common_samples": 2524,
+      "full_area_mm2": 26.57,
+      "common_area_mm2": 25.24000000000001,
+      "common_area_fraction": 0.949943545351901,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000083",
+      "valid_test_samples": 4224,
+      "common_samples": 4034,
+      "full_area_mm2": 42.24000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9550189393939392,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000084",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.9520754716981137,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000085",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961126,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000086",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.9520754716981135,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000087",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.9568618155961128,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000088",
+      "valid_test_samples": 2651,
+      "common_samples": 2518,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9498302527348174,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000089",
+      "valid_test_samples": 4220,
+      "common_samples": 4037,
+      "full_area_mm2": 42.20000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.9566350710900474,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000090",
+      "valid_test_samples": 2654,
+      "common_samples": 2517,
+      "full_area_mm2": 26.54000000000001,
+      "common_area_mm2": 25.170000000000016,
+      "common_area_fraction": 0.9483798040693295,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000091",
+      "valid_test_samples": 4227,
+      "common_samples": 4034,
+      "full_area_mm2": 42.27000000000002,
+      "common_area_mm2": 40.34000000000002,
+      "common_area_fraction": 0.9543411402886208,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000092",
+      "valid_test_samples": 2651,
+      "common_samples": 2518,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9498302527348174,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000093",
+      "valid_test_samples": 4220,
+      "common_samples": 4037,
+      "full_area_mm2": 42.20000000000002,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9566350710900473,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000094",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.9520754716981137,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000095",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9568618155961128,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000096",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.500000000000007,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.9520754716981137,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000097",
+      "valid_test_samples": 4219,
+      "common_samples": 4037,
+      "full_area_mm2": 42.19000000000002,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9568618155961125,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000098",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000099",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9566247926048824,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000100",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000101",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.9566247926048825,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000102",
+      "valid_test_samples": 2649,
+      "common_samples": 2522,
+      "full_area_mm2": 26.490000000000002,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9520573801434505,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000103",
+      "valid_test_samples": 4220,
+      "common_samples": 4034,
+      "full_area_mm2": 42.20000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9559241706161136,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000104",
+      "valid_test_samples": 2646,
+      "common_samples": 2521,
+      "full_area_mm2": 26.46,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9527588813303102,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000105",
+      "valid_test_samples": 4221,
+      "common_samples": 4030,
+      "full_area_mm2": 42.210000000000015,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9547500592276711,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000106",
+      "valid_test_samples": 2649,
+      "common_samples": 2522,
+      "full_area_mm2": 26.49,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9520573801434505,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000107",
+      "valid_test_samples": 4220,
+      "common_samples": 4034,
+      "full_area_mm2": 42.20000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9559241706161136,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000108",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000109",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9566247926048824,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000110",
+      "valid_test_samples": 2650,
+      "common_samples": 2523,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9520754716981134,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000111",
+      "valid_test_samples": 4219,
+      "common_samples": 4036,
+      "full_area_mm2": 42.19000000000001,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9566247926048824,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000112",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9524707657487739,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000113",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9555240123018689,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000114",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.51,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.952470765748774,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000115",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9555240123018689,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000116",
+      "valid_test_samples": 2650,
+      "common_samples": 2518,
+      "full_area_mm2": 26.500000000000004,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.950188679245283,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000117",
+      "valid_test_samples": 4220,
+      "common_samples": 4029,
+      "full_area_mm2": 42.20000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9547393364928909,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000118",
+      "valid_test_samples": 2642,
+      "common_samples": 2521,
+      "full_area_mm2": 26.420000000000005,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9542013626040879,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000119",
+      "valid_test_samples": 4213,
+      "common_samples": 4034,
+      "full_area_mm2": 42.13,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9575124614289106,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000120",
+      "valid_test_samples": 2650,
+      "common_samples": 2518,
+      "full_area_mm2": 26.5,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9501886792452832,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000121",
+      "valid_test_samples": 4220,
+      "common_samples": 4029,
+      "full_area_mm2": 42.20000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9547393364928909,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000122",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9524707657487739,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000123",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27000000000001,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9555240123018687,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000124",
+      "valid_test_samples": 2651,
+      "common_samples": 2525,
+      "full_area_mm2": 26.510000000000005,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.952470765748774,
+      "status": "ok"
+    },
+    {
+      "condition": "flat",
+      "pose_id": "test_000125",
+      "valid_test_samples": 4227,
+      "common_samples": 4039,
+      "full_area_mm2": 42.27000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9555240123018689,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000000",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.22,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000001",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9674251497005988,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000002",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.22,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000003",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9674251497005988,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000004",
+      "valid_test_samples": 2614,
+      "common_samples": 2518,
+      "full_area_mm2": 26.14,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9632746748278501,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000005",
+      "valid_test_samples": 4177,
+      "common_samples": 4029,
+      "full_area_mm2": 41.77,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9645678716782381,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000006",
+      "valid_test_samples": 2613,
+      "common_samples": 2521,
+      "full_area_mm2": 26.130000000000003,
+      "common_area_mm2": 25.210000000000004,
+      "common_area_fraction": 0.9647914274779947,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000007",
+      "valid_test_samples": 4171,
+      "common_samples": 4034,
+      "full_area_mm2": 41.71000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9671541596739391,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000008",
+      "valid_test_samples": 2614,
+      "common_samples": 2518,
+      "full_area_mm2": 26.14,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.96327467482785,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000009",
+      "valid_test_samples": 4177,
+      "common_samples": 4029,
+      "full_area_mm2": 41.77,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9645678716782381,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000010",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.22,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000011",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9674251497005988,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000012",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.220000000000002,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000013",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9674251497005988,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000014",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000015",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9664750957854408,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000016",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000008,
+      "common_area_fraction": 0.9640810087886895,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000017",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.76000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9664750957854407,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000018",
+      "valid_test_samples": 2617,
+      "common_samples": 2522,
+      "full_area_mm2": 26.170000000000005,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9636988918609095,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000019",
+      "valid_test_samples": 4170,
+      "common_samples": 4034,
+      "full_area_mm2": 41.70000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9673860911270984,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000020",
+      "valid_test_samples": 2611,
+      "common_samples": 2521,
+      "full_area_mm2": 26.110000000000007,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9655304481041747,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000021",
+      "valid_test_samples": 4173,
+      "common_samples": 4030,
+      "full_area_mm2": 41.73000000000001,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9657320872274143,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000022",
+      "valid_test_samples": 2617,
+      "common_samples": 2522,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9636988918609096,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000023",
+      "valid_test_samples": 4170,
+      "common_samples": 4034,
+      "full_area_mm2": 41.7,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9673860911270985,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000024",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000025",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9664750957854408,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000026",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.170000000000005,
+      "common_area_mm2": 25.23000000000001,
+      "common_area_fraction": 0.9640810087886895,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000027",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.76000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9664750957854407,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000028",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.170000000000005,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886893,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000029",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.720000000000006,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837008,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000030",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.170000000000005,
+      "common_area_mm2": 25.23,
+      "common_area_fraction": 0.9640810087886892,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000031",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.72000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837007,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000032",
+      "valid_test_samples": 2615,
+      "common_samples": 2518,
+      "full_area_mm2": 26.15000000000001,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9629063097514338,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000033",
+      "valid_test_samples": 4171,
+      "common_samples": 4037,
+      "full_area_mm2": 41.71000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9678734116518821,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000034",
+      "valid_test_samples": 2611,
+      "common_samples": 2517,
+      "full_area_mm2": 26.110000000000007,
+      "common_area_mm2": 25.170000000000005,
+      "common_area_fraction": 0.9639984680199157,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000035",
+      "valid_test_samples": 4172,
+      "common_samples": 4034,
+      "full_area_mm2": 41.720000000000006,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.966922339405561,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000036",
+      "valid_test_samples": 2615,
+      "common_samples": 2518,
+      "full_area_mm2": 26.150000000000002,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.962906309751434,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000037",
+      "valid_test_samples": 4171,
+      "common_samples": 4037,
+      "full_area_mm2": 41.71,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9678734116518821,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000038",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000039",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.720000000000006,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837008,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000040",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17000000000001,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886892,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000041",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.720000000000006,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837008,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000042",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.24,
+      "common_area_fraction": 0.9648318042813454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000043",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000044",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9648318042813455,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000045",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000046",
+      "valid_test_samples": 2619,
+      "common_samples": 2524,
+      "full_area_mm2": 26.190000000000005,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9637266132111489,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000047",
+      "valid_test_samples": 4170,
+      "common_samples": 4040,
+      "full_area_mm2": 41.7,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9688249400479617,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000048",
+      "valid_test_samples": 2624,
+      "common_samples": 2518,
+      "full_area_mm2": 26.240000000000002,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.9596036585365852,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000049",
+      "valid_test_samples": 4166,
+      "common_samples": 4040,
+      "full_area_mm2": 41.660000000000004,
+      "common_area_mm2": 40.4,
+      "common_area_fraction": 0.969755160825732,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000050",
+      "valid_test_samples": 2619,
+      "common_samples": 2524,
+      "full_area_mm2": 26.189999999999998,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9637266132111492,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000051",
+      "valid_test_samples": 4170,
+      "common_samples": 4040,
+      "full_area_mm2": 41.7,
+      "common_area_mm2": 40.39999999999999,
+      "common_area_fraction": 0.9688249400479614,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000052",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.159999999999997,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9648318042813455,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000053",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.76,
+      "common_area_mm2": 40.33999999999999,
+      "common_area_fraction": 0.9659961685823752,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000054",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9648318042813455,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000055",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000056",
+      "valid_test_samples": 2618,
+      "common_samples": 2522,
+      "full_area_mm2": 26.18,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9633307868601986,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000057",
+      "valid_test_samples": 4172,
+      "common_samples": 4036,
+      "full_area_mm2": 41.72,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9674017257909876,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000058",
+      "valid_test_samples": 2618,
+      "common_samples": 2522,
+      "full_area_mm2": 26.180000000000003,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9633307868601985,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000059",
+      "valid_test_samples": 4172,
+      "common_samples": 4036,
+      "full_area_mm2": 41.72,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.9674017257909877,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000060",
+      "valid_test_samples": 2618,
+      "common_samples": 2530,
+      "full_area_mm2": 26.180000000000003,
+      "common_area_mm2": 25.3,
+      "common_area_fraction": 0.9663865546218486,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000061",
+      "valid_test_samples": 4168,
+      "common_samples": 4036,
+      "full_area_mm2": 41.68,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9683301343570058,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000062",
+      "valid_test_samples": 2638,
+      "common_samples": 2524,
+      "full_area_mm2": 26.380000000000003,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9567854435178165,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000063",
+      "valid_test_samples": 4176,
+      "common_samples": 4038,
+      "full_area_mm2": 41.76,
+      "common_area_mm2": 40.379999999999995,
+      "common_area_fraction": 0.9669540229885056,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000064",
+      "valid_test_samples": 2618,
+      "common_samples": 2530,
+      "full_area_mm2": 26.18,
+      "common_area_mm2": 25.299999999999997,
+      "common_area_fraction": 0.9663865546218486,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000065",
+      "valid_test_samples": 4168,
+      "common_samples": 4036,
+      "full_area_mm2": 41.67999999999999,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9683301343570059,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000066",
+      "valid_test_samples": 2618,
+      "common_samples": 2522,
+      "full_area_mm2": 26.18,
+      "common_area_mm2": 25.219999999999995,
+      "common_area_fraction": 0.9633307868601985,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000067",
+      "valid_test_samples": 4172,
+      "common_samples": 4036,
+      "full_area_mm2": 41.71999999999999,
+      "common_area_mm2": 40.35999999999999,
+      "common_area_fraction": 0.9674017257909875,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000068",
+      "valid_test_samples": 2618,
+      "common_samples": 2522,
+      "full_area_mm2": 26.18,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9633307868601987,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000069",
+      "valid_test_samples": 4172,
+      "common_samples": 4036,
+      "full_area_mm2": 41.72,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9674017257909876,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000070",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9648318042813456,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000071",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.76,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823756,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000072",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9648318042813455,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000073",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000074",
+      "valid_test_samples": 2619,
+      "common_samples": 2524,
+      "full_area_mm2": 26.190000000000005,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9637266132111493,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000075",
+      "valid_test_samples": 4170,
+      "common_samples": 4040,
+      "full_area_mm2": 41.7,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9688249400479617,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000076",
+      "valid_test_samples": 2624,
+      "common_samples": 2518,
+      "full_area_mm2": 26.240000000000006,
+      "common_area_mm2": 25.180000000000007,
+      "common_area_fraction": 0.9596036585365855,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000077",
+      "valid_test_samples": 4166,
+      "common_samples": 4040,
+      "full_area_mm2": 41.66000000000001,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.969755160825732,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000078",
+      "valid_test_samples": 2619,
+      "common_samples": 2524,
+      "full_area_mm2": 26.189999999999998,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9637266132111495,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000079",
+      "valid_test_samples": 4170,
+      "common_samples": 4040,
+      "full_area_mm2": 41.7,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9688249400479617,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000080",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.16,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9648318042813456,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000081",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000082",
+      "valid_test_samples": 2616,
+      "common_samples": 2524,
+      "full_area_mm2": 26.160000000000004,
+      "common_area_mm2": 25.24000000000001,
+      "common_area_fraction": 0.9648318042813457,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000083",
+      "valid_test_samples": 4176,
+      "common_samples": 4034,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9659961685823755,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000084",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17000000000001,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.9640810087886897,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000085",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.72000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837007,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000086",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17000000000001,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.9640810087886895,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000087",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.72000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.9676414189837008,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000088",
+      "valid_test_samples": 2615,
+      "common_samples": 2518,
+      "full_area_mm2": 26.150000000000013,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9629063097514341,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000089",
+      "valid_test_samples": 4171,
+      "common_samples": 4037,
+      "full_area_mm2": 41.71000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.967873411651882,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000090",
+      "valid_test_samples": 2611,
+      "common_samples": 2517,
+      "full_area_mm2": 26.110000000000014,
+      "common_area_mm2": 25.170000000000016,
+      "common_area_fraction": 0.9639984680199158,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000091",
+      "valid_test_samples": 4172,
+      "common_samples": 4034,
+      "full_area_mm2": 41.72000000000001,
+      "common_area_mm2": 40.34000000000002,
+      "common_area_fraction": 0.966922339405561,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000092",
+      "valid_test_samples": 2615,
+      "common_samples": 2518,
+      "full_area_mm2": 26.150000000000006,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9629063097514343,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000093",
+      "valid_test_samples": 4171,
+      "common_samples": 4037,
+      "full_area_mm2": 41.710000000000015,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.967873411651882,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000094",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17000000000001,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.9640810087886895,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000095",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.72000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9676414189837008,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000096",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17000000000001,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.9640810087886897,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000097",
+      "valid_test_samples": 4172,
+      "common_samples": 4037,
+      "full_area_mm2": 41.72000000000002,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9676414189837005,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000098",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.169999999999998,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886895,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000099",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9664750957854404,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000100",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000101",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.76000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.9664750957854404,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000102",
+      "valid_test_samples": 2617,
+      "common_samples": 2522,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9636988918609096,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000103",
+      "valid_test_samples": 4170,
+      "common_samples": 4034,
+      "full_area_mm2": 41.70000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9673860911270982,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000104",
+      "valid_test_samples": 2611,
+      "common_samples": 2521,
+      "full_area_mm2": 26.11,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.965530448104175,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000105",
+      "valid_test_samples": 4173,
+      "common_samples": 4030,
+      "full_area_mm2": 41.73000000000001,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9657320872274143,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000106",
+      "valid_test_samples": 2617,
+      "common_samples": 2522,
+      "full_area_mm2": 26.169999999999998,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9636988918609096,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000107",
+      "valid_test_samples": 4170,
+      "common_samples": 4034,
+      "full_area_mm2": 41.70000000000002,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9673860911270981,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000108",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000109",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9664750957854404,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000110",
+      "valid_test_samples": 2617,
+      "common_samples": 2523,
+      "full_area_mm2": 26.17,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9640810087886894,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000111",
+      "valid_test_samples": 4176,
+      "common_samples": 4036,
+      "full_area_mm2": 41.760000000000005,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9664750957854404,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000112",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.22,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000113",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75000000000001,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9674251497005987,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000114",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.220000000000002,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355453,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000115",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.750000000000014,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9674251497005987,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000116",
+      "valid_test_samples": 2614,
+      "common_samples": 2518,
+      "full_area_mm2": 26.140000000000004,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.96327467482785,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000117",
+      "valid_test_samples": 4177,
+      "common_samples": 4029,
+      "full_area_mm2": 41.77000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9645678716782379,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000118",
+      "valid_test_samples": 2613,
+      "common_samples": 2521,
+      "full_area_mm2": 26.130000000000006,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9647914274779947,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000119",
+      "valid_test_samples": 4171,
+      "common_samples": 4034,
+      "full_area_mm2": 41.71000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.967154159673939,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000120",
+      "valid_test_samples": 2614,
+      "common_samples": 2518,
+      "full_area_mm2": 26.14,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9632746748278501,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000121",
+      "valid_test_samples": 4177,
+      "common_samples": 4029,
+      "full_area_mm2": 41.77,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9645678716782381,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000122",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.220000000000002,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9630053394355453,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000123",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75000000000001,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9674251497005987,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000124",
+      "valid_test_samples": 2622,
+      "common_samples": 2525,
+      "full_area_mm2": 26.220000000000002,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.9630053394355454,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_200",
+      "pose_id": "test_000125",
+      "valid_test_samples": 4175,
+      "common_samples": 4039,
+      "full_area_mm2": 41.75000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9674251497005988,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000000",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490333,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000001",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9803398058252427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000002",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490333,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000003",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9803398058252428,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000004",
+      "valid_test_samples": 2586,
+      "common_samples": 2518,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9737045630317093,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000005",
+      "valid_test_samples": 4121,
+      "common_samples": 4029,
+      "full_area_mm2": 41.21000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9776753215239019,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000006",
+      "valid_test_samples": 2587,
+      "common_samples": 2521,
+      "full_area_mm2": 25.870000000000005,
+      "common_area_mm2": 25.210000000000004,
+      "common_area_fraction": 0.9744878237340548,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000007",
+      "valid_test_samples": 4127,
+      "common_samples": 4034,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.977465471286649,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000008",
+      "valid_test_samples": 2586,
+      "common_samples": 2518,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.9737045630317093,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000009",
+      "valid_test_samples": 4121,
+      "common_samples": 4029,
+      "full_area_mm2": 41.21000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9776753215239019,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000010",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490331,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000011",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9803398058252427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000012",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.9764114462490333,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000013",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9803398058252428,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000014",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.860000000000007,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440834,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000015",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9779500848073662,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000016",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.230000000000008,
+      "common_area_fraction": 0.9756380510440837,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000017",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9779500848073662,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000018",
+      "valid_test_samples": 2585,
+      "common_samples": 2522,
+      "full_area_mm2": 25.850000000000005,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9756286266924565,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000019",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.220000000000006,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9786511402231928,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000020",
+      "valid_test_samples": 2589,
+      "common_samples": 2521,
+      "full_area_mm2": 25.890000000000008,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.973735032831209,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000021",
+      "valid_test_samples": 4122,
+      "common_samples": 4030,
+      "full_area_mm2": 41.220000000000006,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9776807375060651,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000022",
+      "valid_test_samples": 2585,
+      "common_samples": 2522,
+      "full_area_mm2": 25.850000000000005,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9756286266924565,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000023",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.22000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9786511402231926,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000024",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440835,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000025",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9779500848073662,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000026",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.860000000000007,
+      "common_area_mm2": 25.23000000000001,
+      "common_area_fraction": 0.9756380510440837,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000027",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 0.9779500848073662,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000028",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000003,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9748840803709429,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000029",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937044,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000030",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000006,
+      "common_area_mm2": 25.23,
+      "common_area_fraction": 0.9748840803709427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000031",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937044,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000032",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.820000000000007,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9752130131680866,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000033",
+      "valid_test_samples": 4129,
+      "common_samples": 4037,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9777185759263746,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000034",
+      "valid_test_samples": 2579,
+      "common_samples": 2517,
+      "full_area_mm2": 25.790000000000006,
+      "common_area_mm2": 25.170000000000005,
+      "common_area_fraction": 0.9759596742923613,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000035",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.22000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 0.9786511402231926,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000036",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.820000000000004,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.9752130131680866,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000037",
+      "valid_test_samples": 4129,
+      "common_samples": 4037,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9777185759263743,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000038",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000003,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9748840803709429,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000039",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.300000000000004,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937047,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000040",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000006,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9748840803709428,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000041",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.300000000000004,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937047,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000042",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.24,
+      "common_area_fraction": 0.9779155366137154,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000043",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.29,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500607,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000044",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9779155366137156,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000045",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500605,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000046",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9779155366137153,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000047",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9786821705426357,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000048",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.82,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 0.9752130131680867,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000049",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.4,
+      "common_area_fraction": 0.9786821705426356,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000050",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.81,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9779155366137154,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000051",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.39999999999999,
+      "common_area_fraction": 0.9786821705426354,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000052",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.809999999999995,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 0.9779155366137156,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000053",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.29,
+      "common_area_mm2": 40.33999999999999,
+      "common_area_fraction": 0.9769920077500603,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000054",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.81,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9779155366137158,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000055",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.29,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500607,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000056",
+      "valid_test_samples": 2584,
+      "common_samples": 2522,
+      "full_area_mm2": 25.84,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9760061919504643,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000057",
+      "valid_test_samples": 4132,
+      "common_samples": 4036,
+      "full_area_mm2": 41.32,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9767666989351403,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000058",
+      "valid_test_samples": 2584,
+      "common_samples": 2522,
+      "full_area_mm2": 25.839999999999996,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 0.9760061919504645,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000059",
+      "valid_test_samples": 4132,
+      "common_samples": 4036,
+      "full_area_mm2": 41.32000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.9767666989351403,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000060",
+      "valid_test_samples": 2584,
+      "common_samples": 2530,
+      "full_area_mm2": 25.84,
+      "common_area_mm2": 25.3,
+      "common_area_fraction": 0.9791021671826625,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000061",
+      "valid_test_samples": 4128,
+      "common_samples": 4036,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9777131782945736,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000062",
+      "valid_test_samples": 2580,
+      "common_samples": 2524,
+      "full_area_mm2": 25.8,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9782945736434109,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000063",
+      "valid_test_samples": 4124,
+      "common_samples": 4038,
+      "full_area_mm2": 41.239999999999995,
+      "common_area_mm2": 40.379999999999995,
+      "common_area_fraction": 0.9791464597478177,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000064",
+      "valid_test_samples": 2584,
+      "common_samples": 2530,
+      "full_area_mm2": 25.839999999999996,
+      "common_area_mm2": 25.299999999999997,
+      "common_area_fraction": 0.9791021671826625,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000065",
+      "valid_test_samples": 4128,
+      "common_samples": 4036,
+      "full_area_mm2": 41.279999999999994,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9777131782945738,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000066",
+      "valid_test_samples": 2584,
+      "common_samples": 2522,
+      "full_area_mm2": 25.839999999999996,
+      "common_area_mm2": 25.219999999999995,
+      "common_area_fraction": 0.9760061919504643,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000067",
+      "valid_test_samples": 4132,
+      "common_samples": 4036,
+      "full_area_mm2": 41.32,
+      "common_area_mm2": 40.35999999999999,
+      "common_area_fraction": 0.9767666989351401,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000068",
+      "valid_test_samples": 2584,
+      "common_samples": 2522,
+      "full_area_mm2": 25.84,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9760061919504645,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000069",
+      "valid_test_samples": 4132,
+      "common_samples": 4036,
+      "full_area_mm2": 41.32,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9767666989351403,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000070",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9779155366137158,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000071",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500605,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000072",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9779155366137156,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000073",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500605,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000074",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 0.9779155366137158,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000075",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9786821705426357,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000076",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.820000000000007,
+      "common_area_mm2": 25.180000000000007,
+      "common_area_fraction": 0.9752130131680867,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000077",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9786821705426357,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000078",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9779155366137156,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000079",
+      "valid_test_samples": 4128,
+      "common_samples": 4040,
+      "full_area_mm2": 41.28,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 0.9786821705426357,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000080",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 0.9779155366137156,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000081",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.29,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500607,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000082",
+      "valid_test_samples": 2581,
+      "common_samples": 2524,
+      "full_area_mm2": 25.810000000000002,
+      "common_area_mm2": 25.24000000000001,
+      "common_area_fraction": 0.9779155366137159,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000083",
+      "valid_test_samples": 4129,
+      "common_samples": 4034,
+      "full_area_mm2": 41.290000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9769920077500605,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000084",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000013,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.974884080370943,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000085",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937044,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000086",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.88000000000001,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.974884080370943,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000087",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.9774818401937047,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000088",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.82000000000001,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9752130131680868,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000089",
+      "valid_test_samples": 4129,
+      "common_samples": 4037,
+      "full_area_mm2": 41.29000000000001,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 0.9777185759263746,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000090",
+      "valid_test_samples": 2579,
+      "common_samples": 2517,
+      "full_area_mm2": 25.790000000000013,
+      "common_area_mm2": 25.170000000000016,
+      "common_area_fraction": 0.9759596742923615,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000091",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.22000000000001,
+      "common_area_mm2": 40.34000000000002,
+      "common_area_fraction": 0.9786511402231928,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000092",
+      "valid_test_samples": 2582,
+      "common_samples": 2518,
+      "full_area_mm2": 25.82000000000001,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 0.9752130131680868,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000093",
+      "valid_test_samples": 4129,
+      "common_samples": 4037,
+      "full_area_mm2": 41.29000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9777185759263743,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000094",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.88000000000001,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 0.974884080370943,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000095",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 0.9774818401937047,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000096",
+      "valid_test_samples": 2588,
+      "common_samples": 2523,
+      "full_area_mm2": 25.880000000000013,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 0.974884080370943,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000097",
+      "valid_test_samples": 4130,
+      "common_samples": 4037,
+      "full_area_mm2": 41.30000000000001,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 0.9774818401937044,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000098",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440837,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000099",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.977950084807366,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000100",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440837,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000101",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 0.977950084807366,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000102",
+      "valid_test_samples": 2585,
+      "common_samples": 2522,
+      "full_area_mm2": 25.85,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 0.9756286266924566,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000103",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.220000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9786511402231926,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000104",
+      "valid_test_samples": 2589,
+      "common_samples": 2521,
+      "full_area_mm2": 25.890000000000004,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9737350328312091,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000105",
+      "valid_test_samples": 4122,
+      "common_samples": 4030,
+      "full_area_mm2": 41.220000000000006,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 0.9776807375060651,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000106",
+      "valid_test_samples": 2585,
+      "common_samples": 2522,
+      "full_area_mm2": 25.849999999999998,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 0.9756286266924566,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000107",
+      "valid_test_samples": 4122,
+      "common_samples": 4034,
+      "full_area_mm2": 41.220000000000006,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9786511402231926,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000108",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440837,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000109",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.269999999999996,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.9779500848073662,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000110",
+      "valid_test_samples": 2586,
+      "common_samples": 2523,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 0.9756380510440835,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000111",
+      "valid_test_samples": 4127,
+      "common_samples": 4036,
+      "full_area_mm2": 41.27,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 0.977950084807366,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000112",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490333,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000113",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9803398058252427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000114",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490331,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000115",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.20000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9803398058252427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000116",
+      "valid_test_samples": 2586,
+      "common_samples": 2518,
+      "full_area_mm2": 25.860000000000007,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.973704563031709,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000117",
+      "valid_test_samples": 4121,
+      "common_samples": 4029,
+      "full_area_mm2": 41.21000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9776753215239019,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000118",
+      "valid_test_samples": 2587,
+      "common_samples": 2521,
+      "full_area_mm2": 25.870000000000005,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 0.9744878237340551,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000119",
+      "valid_test_samples": 4127,
+      "common_samples": 4034,
+      "full_area_mm2": 41.27000000000001,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 0.9774654712866487,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000120",
+      "valid_test_samples": 2586,
+      "common_samples": 2518,
+      "full_area_mm2": 25.86,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 0.9737045630317094,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000121",
+      "valid_test_samples": 4121,
+      "common_samples": 4029,
+      "full_area_mm2": 41.21000000000001,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 0.9776753215239019,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000122",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 0.9764114462490331,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000123",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 0.9803398058252427,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000124",
+      "valid_test_samples": 2586,
+      "common_samples": 2525,
+      "full_area_mm2": 25.860000000000003,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 0.9764114462490333,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_100",
+      "pose_id": "test_000125",
+      "valid_test_samples": 4120,
+      "common_samples": 4039,
+      "full_area_mm2": 41.2,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 0.9803398058252428,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000000",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000001",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000002",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000003",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000004",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000003,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000005",
+      "valid_test_samples": 4029,
+      "common_samples": 4029,
+      "full_area_mm2": 40.290000000000006,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000006",
+      "valid_test_samples": 2521,
+      "common_samples": 2521,
+      "full_area_mm2": 25.210000000000004,
+      "common_area_mm2": 25.210000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000007",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000008",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.18,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000009",
+      "valid_test_samples": 4029,
+      "common_samples": 4029,
+      "full_area_mm2": 40.290000000000006,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000010",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000011",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000012",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.250000000000004,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000013",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000014",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000015",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.360000000000014,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000016",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000008,
+      "common_area_mm2": 25.230000000000008,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000017",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.360000000000014,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000018",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.220000000000006,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000019",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000020",
+      "valid_test_samples": 2521,
+      "common_samples": 2521,
+      "full_area_mm2": 25.210000000000008,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000021",
+      "valid_test_samples": 4030,
+      "common_samples": 4030,
+      "full_area_mm2": 40.30000000000001,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000022",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.220000000000006,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000023",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000024",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000025",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.360000000000014,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000026",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.23000000000001,
+      "common_area_mm2": 25.23000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000027",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.360000000000014,
+      "common_area_mm2": 40.360000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000028",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000029",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000030",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.23,
+      "common_area_mm2": 25.23,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000031",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000032",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000003,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000033",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.37000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000034",
+      "valid_test_samples": 2517,
+      "common_samples": 2517,
+      "full_area_mm2": 25.170000000000005,
+      "common_area_mm2": 25.170000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000035",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34000000000001,
+      "common_area_mm2": 40.34000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000036",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.18,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000037",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000038",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000039",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000040",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000041",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000042",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.24,
+      "common_area_mm2": 25.24,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000043",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000044",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000045",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000046",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.239999999999995,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000047",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.400000000000006,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000048",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.18,
+      "common_area_mm2": 25.18,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000049",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.4,
+      "common_area_mm2": 40.4,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000050",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.239999999999995,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000051",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.39999999999999,
+      "common_area_mm2": 40.39999999999999,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000052",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.239999999999995,
+      "common_area_mm2": 25.239999999999995,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000053",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.33999999999999,
+      "common_area_mm2": 40.33999999999999,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000054",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000055",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000056",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.22,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000057",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000058",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.22,
+      "common_area_mm2": 25.22,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000059",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000060",
+      "valid_test_samples": 2530,
+      "common_samples": 2530,
+      "full_area_mm2": 25.3,
+      "common_area_mm2": 25.3,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000061",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000062",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000063",
+      "valid_test_samples": 4038,
+      "common_samples": 4038,
+      "full_area_mm2": 40.379999999999995,
+      "common_area_mm2": 40.379999999999995,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000064",
+      "valid_test_samples": 2530,
+      "common_samples": 2530,
+      "full_area_mm2": 25.299999999999997,
+      "common_area_mm2": 25.299999999999997,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000065",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000066",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.219999999999995,
+      "common_area_mm2": 25.219999999999995,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000067",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.35999999999999,
+      "common_area_mm2": 40.35999999999999,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000068",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.220000000000002,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000069",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000070",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000006,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000071",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000072",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000073",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000074",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000006,
+      "common_area_mm2": 25.240000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000075",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.400000000000006,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000076",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000007,
+      "common_area_mm2": 25.180000000000007,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000077",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.400000000000006,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000078",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000079",
+      "valid_test_samples": 4040,
+      "common_samples": 4040,
+      "full_area_mm2": 40.400000000000006,
+      "common_area_mm2": 40.400000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000080",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.240000000000002,
+      "common_area_mm2": 25.240000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000081",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000082",
+      "valid_test_samples": 2524,
+      "common_samples": 2524,
+      "full_area_mm2": 25.24000000000001,
+      "common_area_mm2": 25.24000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000083",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000084",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000018,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000085",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000086",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000015,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000087",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.37000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000088",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000014,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000089",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.37000000000002,
+      "common_area_mm2": 40.37000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000090",
+      "valid_test_samples": 2517,
+      "common_samples": 2517,
+      "full_area_mm2": 25.170000000000016,
+      "common_area_mm2": 25.170000000000016,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000091",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34000000000002,
+      "common_area_mm2": 40.34000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000092",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000014,
+      "common_area_mm2": 25.180000000000014,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000093",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.37000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000094",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000015,
+      "common_area_mm2": 25.230000000000015,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000095",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.37000000000001,
+      "common_area_mm2": 40.37000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000096",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000018,
+      "common_area_mm2": 25.230000000000018,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000097",
+      "valid_test_samples": 4037,
+      "common_samples": 4037,
+      "full_area_mm2": 40.370000000000005,
+      "common_area_mm2": 40.370000000000005,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000098",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000099",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000100",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000101",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36000000000001,
+      "common_area_mm2": 40.36000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000102",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.220000000000006,
+      "common_area_mm2": 25.220000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000103",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000104",
+      "valid_test_samples": 2521,
+      "common_samples": 2521,
+      "full_area_mm2": 25.210000000000008,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000105",
+      "valid_test_samples": 4030,
+      "common_samples": 4030,
+      "full_area_mm2": 40.30000000000001,
+      "common_area_mm2": 40.30000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000106",
+      "valid_test_samples": 2522,
+      "common_samples": 2522,
+      "full_area_mm2": 25.220000000000002,
+      "common_area_mm2": 25.220000000000002,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000107",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000108",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000109",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000110",
+      "valid_test_samples": 2523,
+      "common_samples": 2523,
+      "full_area_mm2": 25.230000000000004,
+      "common_area_mm2": 25.230000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000111",
+      "valid_test_samples": 4036,
+      "common_samples": 4036,
+      "full_area_mm2": 40.36,
+      "common_area_mm2": 40.36,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000112",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000113",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000114",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000115",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000116",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000003,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000117",
+      "valid_test_samples": 4029,
+      "common_samples": 4029,
+      "full_area_mm2": 40.290000000000006,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000118",
+      "valid_test_samples": 2521,
+      "common_samples": 2521,
+      "full_area_mm2": 25.210000000000008,
+      "common_area_mm2": 25.210000000000008,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000119",
+      "valid_test_samples": 4034,
+      "common_samples": 4034,
+      "full_area_mm2": 40.34,
+      "common_area_mm2": 40.34,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000120",
+      "valid_test_samples": 2518,
+      "common_samples": 2518,
+      "full_area_mm2": 25.180000000000003,
+      "common_area_mm2": 25.180000000000003,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000121",
+      "valid_test_samples": 4029,
+      "common_samples": 4029,
+      "full_area_mm2": 40.290000000000006,
+      "common_area_mm2": 40.290000000000006,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000122",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.25,
+      "common_area_mm2": 25.25,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000123",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39,
+      "common_area_mm2": 40.39,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000124",
+      "valid_test_samples": 2525,
+      "common_samples": 2525,
+      "full_area_mm2": 25.250000000000004,
+      "common_area_mm2": 25.250000000000004,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    },
+    {
+      "condition": "radius_50",
+      "pose_id": "test_000125",
+      "valid_test_samples": 4039,
+      "common_samples": 4039,
+      "full_area_mm2": 40.39000000000001,
+      "common_area_mm2": 40.39000000000001,
+      "common_area_fraction": 1.0,
+      "status": "ok"
+    }
+  ],
+  "historical_flat_baseline_reproduction": {
+    "flat": {
+      "archived_rmse": 0.13993810166838178,
+      "reproduced_rmse": 0.13993810166838178,
+      "absolute_difference": 0.0,
+      "status": "matched"
+    },
+    "radius_200": {
+      "archived_rmse": 0.1499904003559928,
+      "reproduced_rmse": 0.1499904003559928,
+      "absolute_difference": 0.0,
+      "status": "matched"
+    },
+    "radius_100": {
+      "archived_rmse": 0.1638655284138692,
+      "reproduced_rmse": 0.1638655284138692,
+      "absolute_difference": 0.0,
+      "status": "matched"
+    },
+    "radius_50": {
+      "archived_rmse": 0.19634772622872856,
+      "reproduced_rmse": 0.19634772622872856,
+      "absolute_difference": 0.0,
+      "status": "matched"
+    }
+  },
+  "calibration": {
+    "flat": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_200": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_100": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    },
+    "radius_50": {
+      "status": "passed",
+      "lut": "normal_lut.npz",
+      "required_pose_count": 704,
+      "accepted_pose_count": 704,
+      "missing_required_poses": []
+    }
+  },
+  "training_transfer_diagnostics": {
+    "flat": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "flat",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.0,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 1.0,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2279043,
+      "total_target_observed_samples": 2279043,
+      "total_target_domain_gap_samples": 0,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_200": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_200",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.016839660711651876,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 0.9998885263437784,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2254308,
+      "total_target_observed_samples": 2254561,
+      "total_target_domain_gap_samples": 253,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_100": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_100",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.01856323067561791,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 0.9999166130588097,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2231521,
+      "total_target_observed_samples": 2231690,
+      "total_target_domain_gap_samples": 169,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    },
+    "radius_50": {
+      "status": "post_fit_diagnostic_only",
+      "condition": "radius_50",
+      "pose_count": 704,
+      "pose_equal_color_rmse": 0.01776303747876037,
+      "pose_equal_slope_rmse": 0.0,
+      "mean_target_observed_coverage": 1.0,
+      "total_source_samples": 2279043,
+      "total_migrated_samples": 2177783,
+      "total_target_observed_samples": 2177783,
+      "total_target_domain_gap_samples": 0,
+      "note": "Target training colors and labels are read only after endpoint LUT fitting; they never generate migrated samples or choose parameters."
+    }
+  },
+  "metric_definition": "sqrt(mean_pose(sum_reference_area_weighted squared vector slope error)); local tangent beta",
+  "historical_observation": "actual inverse_srgb(saved sRGB8), paired by material grid index",
+  "endpoint_method": "source inverse_srgb(sRGB8) + H_pt(target contact-reference) - H_pt(flat contact-reference); target beta recomputed"
+}

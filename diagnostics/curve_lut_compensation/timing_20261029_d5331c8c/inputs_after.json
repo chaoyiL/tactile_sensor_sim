@@ -1,0 +1,42 @@
+{
+  "results_lut\\analytic\\manifest.json": {
+    "sha256": "857d1d136e6da3f1bf7ad00845f5231f6117413a925816fa263f1b284388f2be",
+    "mtime_ns": 1792746359937434300
+  },
+  "results_lut\\analytic\\normal_lut.npz": {
+    "sha256": "16922cb6c3777f90bb0c163732599a38687fd49d8fe2e8d071eda66970537a35",
+    "mtime_ns": 1792691671118454900
+  },
+  "results_lut\\analytic\\normal_lut_train.npz": {
+    "sha256": "09169231eb0569480d11cbd869c6121ecbe6d2dd12d30164c6b6891808d49f5b",
+    "mtime_ns": 1792691657372816900
+  },
+  "results_lut\\analytic\\normal_samples.npz": {
+    "sha256": "cb23348222dc445e1b039de9965b4b786ada1cb74ac19159272d6bf655075e41",
+    "mtime_ns": 1792691650310976200
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\manifest.json": {
+    "sha256": "2705a794099054183e747dc9a3fa472c4fc58d6691f3a1387f15554cb2f90e17",
+    "mtime_ns": 1792816073025137900
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_transfer\\20261024T034322_868406Z_8b6a0400\\metrics.json": {
+    "sha256": "9024ecdbbbff07d46b3fda2ccb11cddcf7e94c3dfc0697b6373c19f38fedeca8",
+    "mtime_ns": 1792816062953329000
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\manifest.json": {
+    "sha256": "bdf18dfe0fa651618eeec7abfa60a5ae63807ebb9caf4310642aa3e1c113d805",
+    "mtime_ns": 1793171017335317700
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\metrics.json": {
+    "sha256": "3a63fb048a9bf977aad9551f4a9e019f74c630ac42e7d9b0d86ec5cc07a8468f",
+    "mtime_ns": 1793170513811324100
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\runtime.json": {
+    "sha256": "124d89a4a780fa16b9e1e8f67d8a24785d1081d42d3f6950b6911d70d2f398ee",
+    "mtime_ns": 1793170515082958300
+  },
+  "results_lut\\analytic\\evaluation\\curve_lut_compensation\\20261028_endpoint_hpt_01\\per_pose.csv": {
+    "sha256": "b9fffb97ec40873b24491b78721a46a3d053ff063897266d063ecea76ae073b5",
+    "mtime_ns": 1793171016470083200
+  }
+}

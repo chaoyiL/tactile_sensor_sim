@@ -1,14 +1,16 @@
-"""Validate, migrate, fit, and compare curved-surface normal LUT compensation."""
+"""Migrate, fit, and compare curved normal LUTs using endpoint compensation."""
 from __future__ import annotations
 
 import argparse
 import copy
 import csv
+from contextlib import AbstractContextManager, nullcontext
 from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import time
 import uuid
 
@@ -29,13 +31,80 @@ from experiment.curve_lut_transfer.metrics import (aggregate, evaluate_pose,
                                                     weighted_quantile)
 from .transfer import (MIGRATION_IMAGE_ENCODING, MIGRATION_SAMPLING_VERSION,
                        condition_id, fit_migrated_condition, migrate_pose_samples,
-                       pose_config, reference_geometry, target_valid_grid_indices)
+                       pose_config, target_valid_grid_indices)
+from .timing import RunTimings
 
 
-VERSION = 'curve_lut_compensation_v1'
+VERSION = 'curve_lut_compensation_v2'
+METHODS = ('frozen_flat_lut', 'endpoint_migrated_lut', 'historical_same_curvature_lut')
+DOMAINS = ('full', 'common')
 DEFAULT_EXP_CONFIG = CONFIG_DIR / 'curve_lut_compensation.json'
 RESUME_INPUT_FIELDS = ('source', 'source_files', 'history', 'history_files', 'settings',
                        'source_config', 'split', 'training_poses', 'test_poses', 'conditions')
+
+
+def _timed_phase(timings: RunTimings | None, stage: str,
+                 **metadata) -> AbstractContextManager[dict]:
+    return timings.phase(stage, **metadata) if timings is not None else nullcontext(dict(metadata))
+
+
+def _endpoint_resume_settings(settings: dict) -> dict:
+    """Ignore retired settings that never affected endpoint colors or labels."""
+    return {key: value for key, value in settings.items() if key not in ('matrix', 'nonlinear')}
+
+
+def _method_semantics() -> dict[str, str]:
+    return dict(
+        endpoint='c_target=c_flat_observed + H_target_pt - H_flat_pt; beta recomputed from target sphere geometry',
+        observation='sRGB8 saved observations decoded by inverse_sRGB; H_pt is continuous material-point model',
+        note='Target training measurements are used only for post-fit error/coverage diagnostics.')
+
+
+def _continue_endpoint_scope(checkpoint: Checkpoints, prepared: dict) -> None:
+    """Preserve earlier reports before an unfinished run drops retired methods."""
+    manifest = checkpoint.manifest
+    previous_methods = list(manifest.get('methods', []))
+    archive = checkpoint.root / 'legacy_reports' / uuid.uuid4().hex[:8]
+    json_write(archive / 'manifest.json', manifest)
+    preserved = [archive / 'manifest.json']
+    names = ('metrics.json', 'per_pose.csv', 'cross_method.csv', 'coverage.csv',
+             'runtime.json', 'config_snapshot.json', 'method_semantics.json')
+    old_reports = [checkpoint.root / name for name in names]
+    old_reports += [path for path in (checkpoint.root / 'figures').rglob('*') if path.is_file()]
+    for source in old_reports:
+        if source.is_file():
+            target = archive / source.relative_to(checkpoint.root)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+            preserved.append(target)
+    retired = {key: value for key, value in manifest['completed'].items()
+               if key == 'evaluation' or key.startswith('matrix/')}
+    manifest['completed'] = {key: value for key, value in manifest['completed'].items()
+                             if key not in retired}
+    transition = dict(previous_methods=previous_methods, methods=list(METHODS),
+                      report_domains=list(DOMAINS), archive=str(archive.relative_to(checkpoint.root)),
+                      retired_checkpoints=retired,
+                      archived_manifest_semantics='Original snapshot; historical paths are retained, not relocated',
+                      retired_artifacts_note='Original retired files remain at their historical paths; they are not active endpoint outputs',
+                      reason='Retired comparison methods; endpoint sample and label semantics unchanged',
+                      resumed_at_utc=datetime.now(timezone.utc).isoformat())
+    manifest.setdefault('scope_transitions', []).append(transition)
+    manifest.update(methods=list(METHODS), report_domains=list(DOMAINS),
+                    evaluation_version=VERSION, effective_settings=copy.deepcopy(prepared['settings']),
+                    evaluation=dict(status='pending_endpoint_evaluation', archive=transition['archive']))
+    snapshot_path = checkpoint.root / 'config_snapshot.json'
+    snapshot = _load_json(snapshot_path)
+    snapshot.update(experiment=prepared['settings'], original_snapshot=transition['archive'] + '/config_snapshot.json')
+    json_write(snapshot_path, snapshot)
+    semantics_path = checkpoint.root / 'method_semantics.json'
+    json_write(semantics_path, _method_semantics())
+    json_write(checkpoint.root / 'metrics.json',
+               dict(status='pending_endpoint_evaluation', methods=list(METHODS), domains=list(DOMAINS),
+                    original_report=transition['archive'] + '/metrics.json'))
+    checkpoint.complete('inputs', [snapshot_path, checkpoint.root / 'split.json', semantics_path])
+    scope_path = checkpoint.root / 'endpoint_scope.json'
+    json_write(scope_path, dict(transition, effective_settings=prepared['settings']))
+    checkpoint.complete('endpoint_scope', [scope_path, *preserved])
 
 
 def _load_json(path: Path) -> dict:
@@ -371,7 +440,8 @@ def prepare(lut_results: Path, transfer_results: Path, settings: dict) -> dict:
                               target_test_semantics='historical actual material-paired sRGB8 observations'))
 
 
-def start_run(prepared: dict, settings: dict, out: Path | None, resume: bool) -> Checkpoints:
+def start_run(prepared: dict, settings: dict, out: Path | None, resume: bool, *,
+              update_scope: bool = True) -> Checkpoints:
     parent = prepared['root'] / 'evaluation' / 'curve_lut_compensation'
     if out is None:
         out = parent / (datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S_%fZ')
@@ -385,23 +455,34 @@ def start_run(prepared: dict, settings: dict, out: Path | None, resume: bool) ->
             raise ValueError(f'--resume requires a saved manifest at {path}')
         manifest = _load_json(path)
         previous = manifest.get('identity', {})
-        changed = [key for key in RESUME_INPUT_FIELDS
-                   if previous.get(key) != prepared['identity'].get(key)]
+        changed = []
+        for key in RESUME_INPUT_FIELDS:
+            before, after = previous.get(key), prepared['identity'].get(key)
+            if key == 'settings' and isinstance(before, dict) and isinstance(after, dict):
+                before, after = _endpoint_resume_settings(before), _endpoint_resume_settings(after)
+            if before != after:
+                changed.append(key)
         if changed:
             raise ValueError(f'Resume inputs differ ({", ".join(changed)}): {path}')
         checkpoint = Checkpoints(out, manifest)
-        checkpoint.verify()
+        scope_change = (manifest.get('status') != 'completed'
+                        and any(method not in METHODS for method in manifest.get('methods', [])))
+        if scope_change:
+            required = {key: value for key, value in manifest['completed'].items()
+                        if key != 'evaluation' and not key.startswith('matrix/')}
+            Checkpoints(out, dict(manifest, completed=required)).verify()
+        else:
+            checkpoint.verify()
         prepared['run_signature'] = manifest['run_signature']
+        if scope_change and update_scope:
+            _continue_endpoint_scope(checkpoint, prepared)
         return checkpoint
     if out.exists() and any(out.iterdir()):
         raise ValueError(f'Nonempty output requires compatible --resume: {out}')
     manifest = dict(version=VERSION, status='running', run_signature=prepared['run_signature'],
                     identity=prepared['identity'], completed={}, calibration={}, evaluation={},
                     training_diagnostics={}, execution={},
-                    methods=['frozen_flat_lut', 'endpoint_migrated_lut',
-                             'historical_same_curvature_lut', 'matrix_project_lut',
-                             'matrix_keep_lut', 'matrix_direct', 'matrix_ridge_project_lut',
-                             'matrix_ridge_keep_lut', 'matrix_ridge_direct'],
+                    methods=list(METHODS), report_domains=list(DOMAINS),
                     model_semantics='H_pt=display_linear(contact)-display_linear(reference); inverse_sRGB(srgb8) domain')
     checkpoint = Checkpoints(out, manifest)
     checkpoint.save()
@@ -410,12 +491,7 @@ def start_run(prepared: dict, settings: dict, out: Path | None, resume: bool) ->
              source_run_signature=prepared['source_manifest'].get('run_signature'),
              transfer_run_signature=prepared['history_manifest'].get('run_signature')))
     json_write(out / 'split.json', dict(prepared['split'], independent_test=prepared['test_poses']))
-    json_write(out / 'method_semantics.json', dict(
-        endpoint='c_target=c_flat_observed + H_target_pt - H_flat_pt; beta recomputed from target sphere geometry',
-        matrix_project='F0(D0 Dq+ c)', matrix_keep='F0((I+(D0-Dq)Dq+)c)',
-        matrix_direct='Dq+ c', matrix_ridge='fixed ridge_lambda from experiment config',
-        observation='sRGB8 saved observations decoded by inverse_sRGB; H_pt is continuous material-point model',
-        note='Target training measurements are used only for post-fit error/coverage diagnostics.'))
+    json_write(out / 'method_semantics.json', _method_semantics())
     checkpoint.complete('inputs', [out / 'config_snapshot.json', out / 'split.json',
                                    out / 'method_semantics.json'])
     return checkpoint
@@ -478,164 +554,111 @@ def _build_photometry_models(prepared: dict) -> tuple[dict[str, object], dict]:
     return models, execution
 
 
-def _as_numpy(value) -> np.ndarray:
-    if hasattr(value, 'detach'):
-        value = value.detach().cpu().numpy()
-    return np.asarray(value)
-
-
-def _compute_matrix_cache(prepared: dict, checkpoint: Checkpoints, models: dict[str, object],
-                          settings: dict) -> dict[str, dict[str, np.ndarray]]:
-    from .matrix import compute_local_response_matrix, build_compensation_matrices
-
-    grid = reference_grid(prepared['base'])
-    coordinates = grid.xy_mm.reshape(-1, 2)
-    weights = reference_area_weights(grid).reshape(-1)
-    x0, n0, e0 = reference_geometry(coordinates, None)
-    flat_config = pose_config(prepared['base'], None)
-    flat_response = compute_local_response_matrix(
-        models['flat'], x0, n0, e0, state_config=flat_config,
-        slope_step=settings['matrix']['slope_step'], rcond=settings['matrix']['rcond'])
-    D0 = _as_numpy(flat_response.D)
-    cache = {}
-    for name, radius in prepared['conditions'].items():
-        key = f'matrix/{name}'
-        path = checkpoint.root / 'matrix' / f'{name}.npz'
-        if checkpoint.has(key):
-            cache[name] = load_arrays(path)
-            continue
-        xq, nq, eq = reference_geometry(coordinates, radius)
-        target_config = pose_config(prepared['base'], radius)
-        response = compute_local_response_matrix(
-            models[name], xq, nq, eq, state_config=target_config,
-            slope_step=settings['matrix']['slope_step'], rcond=settings['matrix']['rcond'])
-        matrices = build_compensation_matrices(
-            D0, _as_numpy(response.D), settings['matrix']['ridge_lambda'],
-            rcond=settings['matrix']['rcond'], device=str(models[name].device))
-        data = {field: _as_numpy(getattr(flat_response, field)) for field in
-                ('B', 'D', 'valid', 'singular_values', 'rank', 'condition_number',
-                 'active_light_mask', 'finite_difference_D', 'finite_difference_error')}
-        target = {field: _as_numpy(getattr(response, field)) for field in
-                  ('B', 'D', 'valid', 'singular_values', 'rank', 'condition_number',
-                   'active_light_mask', 'finite_difference_D', 'finite_difference_error')}
-        result = {f'D0_{field}': data[field] for field in data}
-        result.update({f'Dq_{field}': target[field] for field in target})
-        result.update({field: _as_numpy(value) for field, value in matrices.items()})
-        matrix_valid = np.asarray(result['valid'], dtype=bool) if 'valid' in result else np.asarray(matrices['valid'], dtype=bool)
-        matrix_valid &= np.asarray(data['valid'], dtype=bool) & np.asarray(target['valid'], dtype=bool)
-        matrix_valid &= np.asarray(target['rank']) == 2
-        matrix_valid &= np.asarray(target['singular_values'])[:, -1] >= settings['matrix']['minimum_singular_value']
-        matrix_valid &= np.isfinite(np.asarray(target['condition_number']))
-        result['matrix_valid'] = matrix_valid
-        result['reference_area_mm2'] = weights
-        result['grid_index'] = np.arange(len(coordinates), dtype=np.int64)
-        result['reference_coordinates_mm'] = coordinates
-        npz_write(path, **result, metadata=json.dumps(dict(condition=name, radius_mm=radius,
-            ridge_lambda=settings['matrix']['ridge_lambda'], rcond=settings['matrix']['rcond'],
-            slope_step=settings['matrix']['slope_step'],
-            minimum_singular_value=settings['matrix']['minimum_singular_value'],
-            method='local_response_matrix_equations_15_to_22'), ensure_ascii=False))
-        checkpoint.complete(key, [path], valid_count=int(matrix_valid.sum()),
-                            invalid_count=int(len(matrix_valid) - matrix_valid.sum()))
-        cache[name] = result
-    return cache
-
-
 def _pose_source_selection(source_arrays: dict, pose_index: int) -> np.ndarray:
     return np.flatnonzero(np.asarray(source_arrays['image_index']) == pose_index)
 
 
 def run_migrations(prepared: dict, checkpoint: Checkpoints, models: dict[str, object],
-                   settings: dict) -> dict[str, list[dict]]:
+                   settings: dict, *, timings: RunTimings | None = None
+                   ) -> dict[str, list[dict]]:
     """Create per-pose endpoint samples; every completed pose is atomically checkpointed."""
     by_condition = {}
     axes_x = np.asarray(prepared['source_arrays']['material_grid_x_mm'], dtype=np.float64)
     axes_y = np.asarray(prepared['source_arrays']['material_grid_y_mm'], dtype=np.float64)
     chunk_size = settings['chunk_size']
     for name, radius in prepared['conditions'].items():
-        out_dir = checkpoint.root / 'samples' / name / 'migrated'
-        out_dir.mkdir(parents=True, exist_ok=True)
-        samples = []
-        for pose_index, pose in enumerate(prepared['poses']):
-            key = f'migration/{name}/{pose["pose_id"]}'
-            path = out_dir / f'{pose["pose_id"]}.npz'
-            if checkpoint.has(key):
-                sample = load_arrays(path)
-            else:
-                source_indices = _pose_source_selection(prepared['source_arrays'], pose_index)
-                coordinates = prepared['source_arrays']['material_coordinates'][source_indices]
-                grid_indices = prepared['source_arrays']['material_grid_index'][source_indices]
-                state_config = pose_config(prepared['base'], radius, pose)
-                target_indices = target_valid_grid_indices(
-                    coordinates, grid_indices, state_config, prepared['references'][name],
-                    minimum_reference_dot=.1, target_model=models[name], chunk_size=chunk_size)
-                sample = migrate_pose_samples(prepared['source_arrays'], pose_index, pose,
-                                              radius, prepared['base'], target_indices,
-                                              models['flat'], models[name], chunk_size)
-                sample['material_grid_x_mm'] = axes_x
-                sample['material_grid_y_mm'] = axes_y
-                npz_write(path, **sample, metadata=json.dumps(dict(
-                    pose=pose, condition=name, radius_mm=radius,
-                    run_signature=prepared['run_signature'],
-                    method='endpoint_H_pt_color_delta_and_recomputed_target_geometry',
-                    source_sample_count=int(len(source_indices)),
-                    target_grid_index_count=int(len(target_indices))), ensure_ascii=False))
-                checkpoint.complete(key, [path], sample_count=len(sample['grid_index']),
-                                    source_candidate_count=sample['source_candidate_count'],
-                                    target_geometry_retained_count=sample['target_geometry_retained_count'],
-                                    model_invalid_count=sample['model_invalid_count'])
-                print(f'{name} migrated: {pose_index + 1}/{len(prepared["poses"])}; '
-                      f'{len(sample["grid_index"])} samples', flush=True)
-            samples.append(sample)
-        by_condition[name] = samples
+        with _timed_phase(timings, 'endpoint_migration', condition=name,
+                          new_pose_count=0, reused_pose_count=0) as timing:
+            out_dir = checkpoint.root / 'samples' / name / 'migrated'
+            out_dir.mkdir(parents=True, exist_ok=True)
+            samples = []
+            for pose_index, pose in enumerate(prepared['poses']):
+                key = f'migration/{name}/{pose["pose_id"]}'
+                path = out_dir / f'{pose["pose_id"]}.npz'
+                if checkpoint.has(key):
+                    sample = load_arrays(path)
+                    timing['reused_pose_count'] += 1
+                else:
+                    timing['new_pose_count'] += 1
+                    source_indices = _pose_source_selection(prepared['source_arrays'], pose_index)
+                    coordinates = prepared['source_arrays']['material_coordinates'][source_indices]
+                    grid_indices = prepared['source_arrays']['material_grid_index'][source_indices]
+                    state_config = pose_config(prepared['base'], radius, pose)
+                    target_indices = target_valid_grid_indices(
+                        coordinates, grid_indices, state_config, prepared['references'][name],
+                        minimum_reference_dot=.1, target_model=models[name], chunk_size=chunk_size)
+                    sample = migrate_pose_samples(prepared['source_arrays'], pose_index, pose,
+                                                  radius, prepared['base'], target_indices,
+                                                  models['flat'], models[name], chunk_size)
+                    sample['material_grid_x_mm'] = axes_x
+                    sample['material_grid_y_mm'] = axes_y
+                    npz_write(path, **sample, metadata=json.dumps(dict(
+                        pose=pose, condition=name, radius_mm=radius,
+                        run_signature=prepared['run_signature'],
+                        method='endpoint_H_pt_color_delta_and_recomputed_target_geometry',
+                        source_sample_count=int(len(source_indices)),
+                        target_grid_index_count=int(len(target_indices))), ensure_ascii=False))
+                    checkpoint.complete(key, [path], sample_count=len(sample['grid_index']),
+                                        source_candidate_count=sample['source_candidate_count'],
+                                        target_geometry_retained_count=sample['target_geometry_retained_count'],
+                                        model_invalid_count=sample['model_invalid_count'])
+                    print(f'{name} migrated: {pose_index + 1}/{len(prepared["poses"])}; '
+                          f'{len(sample["grid_index"])} samples', flush=True)
+                samples.append(sample)
+            timing['sample_count'] = sum(len(sample['grid_index']) for sample in samples)
+            by_condition[name] = samples
     return by_condition
 
 
-def fit_conditions(prepared: dict, checkpoint: Checkpoints, by_condition: dict) -> dict[str, NormalCalibration | None]:
+def fit_conditions(prepared: dict, checkpoint: Checkpoints, by_condition: dict, *,
+                   timings: RunTimings | None = None) -> dict[str, NormalCalibration | None]:
     """Build and validate every endpoint LUT using the saved fixed source split."""
     endpoint_luts = {}
     for name, radius in prepared['conditions'].items():
-        key = f'fit/{name}'
-        out_dir = checkpoint.root / 'calibration' / name
-        if checkpoint.has(key):
-            info = checkpoint.manifest['calibration'][name]
-            lut_name = info.get('lut')
-            endpoint_luts[name] = NormalCalibration.load(out_dir / lut_name) if lut_name else None
-            continue
-        metadata = dict(prepared['source_metadata'],
-                        run_signature=signature(dict(parent=prepared['run_signature'], condition=name,
-                                                      method='endpoint_H_pt')),
-                        parent_run_signature=prepared['run_signature'], backend='analytic',
-                        slope_frame_id=SLOPE_FRAME_ID,
-                        coordinate_chart_id='cylinder_reference_arclength_' + name,
-                        coordinate_chart_storage='embedded_reference_arclength_axes',
-                        calibration_kind='plane_to_curve_endpoint_H_pt_transfer',
-                        sampling_version=MIGRATION_SAMPLING_VERSION,
-                        image_encoding=MIGRATION_IMAGE_ENCODING,
-                        source_observation_encoding='inverse_srgb(srgb8)',
-                        query_observation_encoding='inverse_srgb(srgb8)',
-                        training_color_generation='source_inverse_srgb8_plus_continuous_H_pt_target_minus_flat',
-                        frame_convention='per_sample_reference_local_tangent_frame_b_v1',
-                        fixed_reference_normal=([0., 0., 1.] if radius is None else None),
-                        fixed_tangent_frame=([[1., 0.], [0., 1.], [0., 0.]] if radius is None else None),
-                        color_semantics='signed_linear_rgb_inverse_srgb8_plus_continuous_H_pt_delta',
-                        simulation_config_signature=signature(pose_config(prepared['base'], radius)))
-        for field in ('validation', 'validation_status', 'training_images', 'validation_images'):
-            metadata.pop(field, None)
-        report, lut = fit_migrated_condition(by_condition[name], pose_config(prepared['base'], radius),
-                                             out_dir, metadata, prepared['split'],
-                                             [pose['pose_id'] for pose in prepared['poses']])
-        summary = dict(status=report.get('status', 'failed'),
-                       lut=('normal_lut.npz' if report.get('status') == 'passed' and lut is not None else
-                            'normal_lut_diagnostic.npz' if lut is not None else None),
-                       required_pose_count=len(prepared['poses']),
-                       accepted_pose_count=report.get('accepted_pose_count'),
-                       missing_required_poses=report.get('missing_required_poses', []))
-        checkpoint.manifest['calibration'][name] = summary
-        files = [path for path in out_dir.rglob('*') if path.is_file()]
-        checkpoint.complete(key, files, status=summary['status'])
-        endpoint_luts[name] = lut
-        print(f'{name} endpoint LUT status: {summary["status"]}', flush=True)
+        with _timed_phase(timings, 'endpoint_fit', condition=name,
+                          action='reuse' if checkpoint.has(f'fit/{name}') else 'compute',
+                          sample_count=sum(len(sample['grid_index']) for sample in by_condition[name])):
+            key = f'fit/{name}'
+            out_dir = checkpoint.root / 'calibration' / name
+            if checkpoint.has(key):
+                info = checkpoint.manifest['calibration'][name]
+                lut_name = info.get('lut')
+                endpoint_luts[name] = NormalCalibration.load(out_dir / lut_name) if lut_name else None
+                continue
+            metadata = dict(prepared['source_metadata'],
+                            run_signature=signature(dict(parent=prepared['run_signature'], condition=name,
+                                                          method='endpoint_H_pt')),
+                            parent_run_signature=prepared['run_signature'], backend='analytic',
+                            slope_frame_id=SLOPE_FRAME_ID,
+                            coordinate_chart_id='cylinder_reference_arclength_' + name,
+                            coordinate_chart_storage='embedded_reference_arclength_axes',
+                            calibration_kind='plane_to_curve_endpoint_H_pt_transfer',
+                            sampling_version=MIGRATION_SAMPLING_VERSION,
+                            image_encoding=MIGRATION_IMAGE_ENCODING,
+                            source_observation_encoding='inverse_srgb(srgb8)',
+                            query_observation_encoding='inverse_srgb(srgb8)',
+                            training_color_generation='source_inverse_srgb8_plus_continuous_H_pt_target_minus_flat',
+                            frame_convention='per_sample_reference_local_tangent_frame_b_v1',
+                            fixed_reference_normal=([0., 0., 1.] if radius is None else None),
+                            fixed_tangent_frame=([[1., 0.], [0., 1.], [0., 0.]] if radius is None else None),
+                            color_semantics='signed_linear_rgb_inverse_srgb8_plus_continuous_H_pt_delta',
+                            simulation_config_signature=signature(pose_config(prepared['base'], radius)))
+            for field in ('validation', 'validation_status', 'training_images', 'validation_images'):
+                metadata.pop(field, None)
+            report, lut = fit_migrated_condition(by_condition[name], pose_config(prepared['base'], radius),
+                                                 out_dir, metadata, prepared['split'],
+                                                 [pose['pose_id'] for pose in prepared['poses']])
+            summary = dict(status=report.get('status', 'failed'),
+                           lut=('normal_lut.npz' if report.get('status') == 'passed' and lut is not None else
+                                'normal_lut_diagnostic.npz' if lut is not None else None),
+                           required_pose_count=len(prepared['poses']),
+                           accepted_pose_count=report.get('accepted_pose_count'),
+                           missing_required_poses=report.get('missing_required_poses', []))
+            checkpoint.manifest['calibration'][name] = summary
+            files = [path for path in out_dir.rglob('*') if path.is_file()]
+            checkpoint.complete(key, files, status=summary['status'])
+            endpoint_luts[name] = lut
+            print(f'{name} endpoint LUT status: {summary["status"]}', flush=True)
     return endpoint_luts
 
 
@@ -752,46 +775,21 @@ def diagnose_training_transfer(prepared: dict, checkpoint: Checkpoints,
 
 
 def _predict_method(method: str, sample: dict, condition: str, prepared: dict,
-                    endpoint_luts: dict, matrix_cache: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
-    """Return predicted slopes, prediction-valid mask, LUT query colors, and LUT use flag."""
+                    endpoint_luts: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
+    """Query one of the retained LUTs using the actual target observation."""
     colors = np.asarray(sample['color_residual_samples'], dtype=np.float64)
-    grid_index = np.asarray(sample['grid_index'], dtype=np.int64)
-    n = len(grid_index)
-    flat_lut = prepared['source_lut']
-    lut = None
     if method == 'frozen_flat_lut':
-        lut = flat_lut
+        lut = prepared['source_lut']
     elif method == 'endpoint_migrated_lut':
         lut = endpoint_luts.get(condition)
     elif method == 'historical_same_curvature_lut':
         lut = prepared['history_luts'].get(condition)
-    if method in ('frozen_flat_lut', 'endpoint_migrated_lut', 'historical_same_curvature_lut'):
-        if lut is None:
-            return np.full((n, 2), np.nan), np.zeros(n, dtype=bool), colors, True
-        prediction, _, _ = lookup_slopes_raw(colors, lut)
-        return prediction, np.isfinite(prediction).all(axis=-1), colors, True
-
-    matrices = matrix_cache[condition]
-    valid = np.asarray(matrices['matrix_valid'][grid_index], dtype=bool)
-    if method in ('matrix_project_lut', 'matrix_keep_lut',
-                  'matrix_ridge_project_lut', 'matrix_ridge_keep_lut'):
-        field = {'matrix_project_lut': 'C_project', 'matrix_keep_lut': 'C_keep',
-                 'matrix_ridge_project_lut': 'C_project_ridge',
-                 'matrix_ridge_keep_lut': 'C_keep_ridge'}[method]
-        corrected = np.full((n, 3), np.nan, dtype=np.float64)
-        corrected[valid] = np.einsum('nij,nj->ni', matrices[field][grid_index[valid]], colors[valid])
-        prediction = np.full((n, 2), np.nan, dtype=np.float64)
-        finite = valid & np.isfinite(corrected).all(axis=-1)
-        if np.any(finite):
-            prediction[finite] = lookup_slopes_raw(corrected[finite], flat_lut)[0]
-        return prediction, finite & np.isfinite(prediction).all(axis=-1), corrected, True
-    if method in ('matrix_direct', 'matrix_ridge_direct'):
-        field = 'R_direct' if method == 'matrix_direct' else 'R_direct_ridge'
-        prediction = np.full((n, 2), np.nan, dtype=np.float64)
-        prediction[valid] = np.einsum('nij,nj->ni', matrices[field][grid_index[valid]], colors[valid])
-        return prediction, valid & np.isfinite(prediction).all(axis=-1), colors, False
-    raise ValueError(f'Unknown compensation method: {method}')
-
+    else:
+        raise ValueError(f'Unknown compensation method: {method}')
+    if lut is None:
+        return np.full((len(colors), 2), np.nan), np.zeros(len(colors), dtype=bool), colors, True
+    prediction, _, _ = lookup_slopes_raw(colors, lut)
+    return prediction, np.isfinite(prediction).all(axis=-1), colors, True
 
 def _evaluate_prediction(sample: dict, prediction: np.ndarray, valid: np.ndarray,
                          query_colors: np.ndarray, support_lut: NormalCalibration,
@@ -811,18 +809,14 @@ def _evaluate_prediction(sample: dict, prediction: np.ndarray, valid: np.ndarray
                invalid_prediction_count=invalid_count, **metadata)
     if invalid_count:
         row.update(rmse=None, mse=None, angular_rmse_degrees=None,
-                   reason='matrix rank/conditioning failure or non-finite prediction')
+                   reason='non-finite LUT prediction')
         return row, {}
     sample_view = dict(sample, color_residual_samples=np.asarray(query_colors, dtype=np.float32))
     metric, detail = evaluate_pose(sample_view, support_lut, indices, prediction=prediction)
     metric.update(metadata)
     metric['valid_prediction_count'] = len(take)
-    if method in ('matrix_direct', 'matrix_ridge_direct'):
-        metric['lut_support_applicable'] = False
-        metric['support_note'] = 'flat LUT support describes raw RGB context only; direct slope method does not query a LUT'
-    else:
-        metric['lut_support_applicable'] = True
-    # Keep the original target RGB support visible even when a matrix changes the query color.
+    metric['lut_support_applicable'] = True
+    # Keep support in the original planar color domain visible for each LUT.
     raw_inside, raw_supported = support(np.asarray(sample['color_residual_samples'], dtype=np.float32)[take],
                                         raw_flat_support_lut)
     area = np.asarray(sample['area_mm2'], dtype=np.float64)[take]
@@ -832,24 +826,9 @@ def _evaluate_prediction(sample: dict, prediction: np.ndarray, valid: np.ndarray
     return metric, detail
 
 
-def _finite_stat(values: np.ndarray, statistic: str, quantile: float | None = None) -> float | None:
-    """Return a scalar over finite values only, or None when none are available."""
-    finite = np.asarray(values, dtype=np.float64).reshape(-1)
-    finite = finite[np.isfinite(finite)]
-    if not len(finite):
-        return None
-    if statistic == 'min':
-        return float(np.min(finite))
-    if statistic == 'max':
-        return float(np.max(finite))
-    if statistic == 'percentile' and quantile is not None:
-        return float(np.percentile(finite, quantile))
-    raise ValueError(f'Unknown finite statistic: {statistic}')
-
-
-def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict,
-                 matrix_cache: dict) -> dict:
-    """Compare all methods on full, shared, and matrix-supported test domains."""
+def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict, *,
+                 timings: RunTimings | None = None) -> dict:
+    """Compare endpoint and reference LUTs on full and shared material domains."""
     condition_names = list(prepared['conditions'])
     datasets = {}
     for name in condition_names:
@@ -873,85 +852,48 @@ def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict,
             common.intersection_update(datasets[name][pose_index]['grid_index'].tolist())
         common_by_pose.append(np.asarray(sorted(common), dtype=np.int64))
 
-    methods = ('frozen_flat_lut', 'endpoint_migrated_lut', 'historical_same_curvature_lut',
-               'matrix_project_lut', 'matrix_keep_lut', 'matrix_direct',
-               'matrix_ridge_project_lut', 'matrix_ridge_keep_lut', 'matrix_ridge_direct')
-    domains = ('full', 'common', 'matrix_matched')
     metric_summaries, row_sets, per_pose_rows, coverage_rows = {}, {}, [], []
     tolerances = prepared['settings']['metrics']['slope_tolerances']
     for name in condition_names:
-        matrix = matrix_cache[name]
         for pose_index, (pose, sample) in enumerate(zip(prepared['test_poses'], datasets[name], strict=True)):
             idx = sample['grid_index']
-            valid = matrix['matrix_valid'][idx]
             common = common_by_pose[pose_index]
             common_take = np.searchsorted(idx, common)
-            matched = common[valid[common_take]] if len(common) else np.empty(0, np.int64)
             area = np.asarray(sample['area_mm2'], dtype=np.float64)
-            selected_matrix_area = area[valid]
-            sigma1 = np.asarray(matrix['Dq_singular_values'][idx, 0], dtype=np.float64)
-            sigma2 = np.asarray(matrix['Dq_singular_values'][idx, 1], dtype=np.float64)
-            condition_numbers = np.asarray(matrix['Dq_condition_number'][idx], dtype=np.float64)
-            finite_difference_error = np.asarray(matrix['Dq_finite_difference_error'][idx], dtype=np.float64)
+            full_area, common_area = float(area.sum()), float(area[common_take].sum())
             coverage_rows.append(dict(condition=name, pose_id=pose['pose_id'],
-                valid_test_samples=len(idx), common_samples=len(common), matrix_rank_valid_samples=int(valid.sum()),
-                common_area_fraction=float(area[common_take].sum() / area.sum()) if len(common) and area.sum() else 0.,
-                matrix_valid_area_fraction=float(selected_matrix_area.sum() / area.sum()) if area.sum() else None,
-                matrix_matched_area_fraction=float(area[np.searchsorted(idx, matched)].sum() / area.sum())
-                    if len(matched) and area.sum() else 0.,
-                matrix_invalid_count=int(np.count_nonzero(~valid)),
-                rank_failure_count=int(np.count_nonzero(~valid)),
-                Dq_singular_values_nonfinite_count=int(np.count_nonzero(~(np.isfinite(sigma1) & np.isfinite(sigma2)))),
-                sigma1_min=_finite_stat(sigma1, 'min'),
-                sigma2_min=_finite_stat(sigma2, 'min'),
-                sigma2_p05=_finite_stat(sigma2, 'percentile', 5),
-                singular_value_statistics_population='finite_values_only',
-                condition_number_p95=_finite_stat(condition_numbers, 'percentile', 95),
-                condition_number_statistic_population='finite_values_only',
-                condition_number_finite_count=int(np.count_nonzero(np.isfinite(condition_numbers))),
-                condition_number_nonfinite_count=int(np.count_nonzero(~np.isfinite(condition_numbers))),
-                finite_difference_D_error_p95=_finite_stat(finite_difference_error, 'percentile', 95),
-                finite_difference_D_error_max=_finite_stat(finite_difference_error, 'max'),
-                finite_difference_D_error_statistic_population='finite_values_only',
-                finite_difference_D_error_finite_count=int(np.count_nonzero(np.isfinite(finite_difference_error))),
-                finite_difference_D_error_nonfinite_count=int(np.count_nonzero(~np.isfinite(finite_difference_error))),
-                active_light_set_changed_fraction=float(np.mean(np.any(
-                    matrix['D0_active_light_mask'][idx] != matrix['Dq_active_light_mask'][idx], axis=-1)))
-                    if len(idx) else None,
-                status='ok' if np.all(valid) else 'incomplete'))
+                valid_test_samples=len(idx), common_samples=len(common),
+                full_area_mm2=full_area, common_area_mm2=common_area,
+                common_area_fraction=common_area / full_area if full_area > 0. else 0.,
+                status='ok' if len(idx) and len(common) else 'empty'))
 
-    for method in methods:
+    for method in METHODS:
         for name in condition_names:
-            grouped_rows = {domain: [] for domain in domains}
-            grouped_details = {domain: [] for domain in domains}
+            grouped_rows = {domain: [] for domain in DOMAINS}
+            grouped_details = {domain: [] for domain in DOMAINS}
             for pose_index, (pose, sample) in enumerate(zip(prepared['test_poses'], datasets[name], strict=True)):
-                pred, valid, query_colors, uses_lut = _predict_method(method, sample, name,
-                                                                       prepared, endpoint_luts, matrix_cache)
-                if uses_lut and method in ('endpoint_migrated_lut', 'historical_same_curvature_lut'):
-                    method_lut = (endpoint_luts.get(name) if method == 'endpoint_migrated_lut'
-                                  else prepared['history_luts'].get(name))
+                query_start = time.perf_counter()
+                pred, valid, query_colors, _ = _predict_method(method, sample, name, prepared, endpoint_luts)
+                if timings is not None:
+                    timings.record_query(method, name, time.perf_counter() - query_start,
+                                         len(sample['grid_index']))
+                if method == 'endpoint_migrated_lut':
+                    method_lut = endpoint_luts.get(name)
+                    lut_status = checkpoint.manifest.get('calibration', {}).get(name, {}).get('status', 'unknown')
+                elif method == 'historical_same_curvature_lut':
+                    method_lut = prepared['history_luts'].get(name)
+                    lut_status = prepared['calibration_status'].get(name, {}).get('status', 'published')
                 else:
                     method_lut = prepared['source_lut']
-                lut_status = ('unavailable' if method_lut is None else
-                              prepared['calibration_status'].get(name, {}).get('status', 'published')
-                              if method == 'historical_same_curvature_lut' else
-                              checkpoint.manifest.get('calibration', {}).get(name, {}).get('status', 'published')
-                              if method == 'endpoint_migrated_lut' else 'published')
+                    lut_status = 'published'
+                if method_lut is None:
+                    lut_status = 'unavailable'
                 pose_meta = dict(pose_id=pose['pose_id'], anchor_id=pose['anchor_id'],
                                  u=pose['center_uv'][0], v=pose['center_uv'][1], depth_mm=pose['depth_mm'],
                                  method=method, condition=name, lut_status=lut_status)
                 method_support_lut = method_lut if method_lut is not None else prepared['source_lut']
-                for domain in domains:
-                    if domain == 'full':
-                        indices = None
-                    elif domain == 'common':
-                        indices = common_by_pose[pose_index]
-                    else:
-                        sample_grid = sample['grid_index']
-                        current_valid = matrix_cache[name]['matrix_valid'][sample_grid]
-                        common = common_by_pose[pose_index]
-                        common_take = np.searchsorted(sample_grid, common)
-                        indices = common[current_valid[common_take]] if len(common) else np.empty(0, np.int64)
+                for domain in DOMAINS:
+                    indices = None if domain == 'full' else common_by_pose[pose_index]
                     metric, detail = _evaluate_prediction(sample, pred, valid, query_colors,
                                                            method_support_lut, indices,
                                                            method=method, metadata=dict(pose_meta, domain=domain),
@@ -960,43 +902,30 @@ def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict,
                     if detail:
                         grouped_details[domain].append(detail)
                     per_pose_rows.append(metric)
-            for domain in domains:
+            for domain in DOMAINS:
                 key = f'{method}/{name}/{domain}'
-                metric_summaries[key] = aggregate(grouped_rows[domain], grouped_details[domain], tolerances)
-                metric_summaries[key]['method'] = method
-                metric_summaries[key]['condition'] = name
-                metric_summaries[key]['domain'] = domain
-                if method in ('matrix_direct', 'matrix_ridge_direct'):
-                    metric_summaries[key]['out_of_range_fraction'] = None
-                    metric_summaries[key]['original_support_fraction'] = None
-                    metric_summaries[key]['lut_support_applicable'] = False
-                    for row in grouped_rows[domain]:
-                        row['out_of_range_fraction'] = None
-                        row['original_support_fraction'] = None
+                summary = aggregate(grouped_rows[domain], grouped_details[domain], tolerances)
+                summary.update(method=method, condition=name, domain=domain)
                 if method == 'historical_same_curvature_lut':
-                    metric_summaries[key]['lut_status'] = prepared['calibration_status'].get(name, {}).get('status', 'published')
+                    summary['lut_status'] = prepared['calibration_status'].get(name, {}).get('status', 'published')
                 elif method == 'endpoint_migrated_lut':
-                    metric_summaries[key]['lut_status'] = checkpoint.manifest.get('calibration', {}).get(name, {}).get('status')
+                    summary['lut_status'] = checkpoint.manifest.get('calibration', {}).get(name, {}).get('status')
+                metric_summaries[key] = summary
                 row_sets[key] = grouped_rows[domain]
 
     comparisons = {}
     repeats = prepared['settings']['metrics']['bootstrap_repeats']
     seed = prepared['settings']['metrics']['seed']
     for name in condition_names:
-        comparisons[name] = {}
-        for domain in ('common', 'matrix_matched'):
-            baseline = row_sets[f'frozen_flat_lut/{name}/{domain}']
-            for method in methods:
-                if method == 'frozen_flat_lut':
-                    continue
-                rows = row_sets[f'{method}/{name}/{domain}']
-                comparisons[name][f'{method}/{domain}'] = paired_bootstrap(
-                    rows, baseline, repeats=repeats, seed=seed)
+        baseline = row_sets[f'frozen_flat_lut/{name}/common']
+        comparisons[name] = {
+            f'{method}/common': paired_bootstrap(row_sets[f'{method}/{name}/common'], baseline,
+                                                 repeats=repeats, seed=seed)
+            for method in METHODS if method != 'frozen_flat_lut'}
 
     historical_reproduction = {}
     for name in condition_names:
-        key = f'flat/{name}/common'
-        archived = prepared['history_metrics'].get('metrics', {}).get(key, {}).get('rmse')
+        archived = prepared['history_metrics'].get('metrics', {}).get(f'flat/{name}/common', {}).get('rmse')
         reproduced = metric_summaries[f'frozen_flat_lut/{name}/common'].get('rmse')
         matches = (archived is not None and reproduced is not None
                    and np.isclose(archived, reproduced, rtol=0, atol=1e-12))
@@ -1005,12 +934,13 @@ def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict,
                                                                   if archived is not None and reproduced is not None else None),
                                              status='matched' if matches else 'mismatch')
     result = dict(version=VERSION, status='completed', conditions=prepared['conditions'],
-                  methods=list(methods), metrics=metric_summaries,
+                  methods=list(METHODS), domains=list(DOMAINS), metrics=metric_summaries,
+                  evaluation_settings=prepared['settings'],
+                  scope_transitions=copy.deepcopy(checkpoint.manifest.get('scope_transitions', [])),
                   comparisons=comparisons, coverage=coverage_rows,
                   historical_flat_baseline_reproduction=historical_reproduction,
                   calibration=checkpoint.manifest['calibration'],
                   training_transfer_diagnostics=checkpoint.manifest.get('training_diagnostics', {}),
-                  matrix_settings=prepared['settings']['matrix'],
                   metric_definition='sqrt(mean_pose(sum_reference_area_weighted squared vector slope error)); local tangent beta',
                   historical_observation='actual inverse_srgb(saved sRGB8), paired by material grid index',
                   endpoint_method='source inverse_srgb(sRGB8) + H_pt(target contact-reference) - H_pt(flat contact-reference); target beta recomputed')
@@ -1028,9 +958,8 @@ def evaluate_all(prepared: dict, checkpoint: Checkpoints, endpoint_luts: dict,
         raise ValueError(f'Frozen flat LUT baseline does not reproduce historical metrics: {failed_baselines}')
     return result
 
-
 def _plot_evaluation(out: Path, methods: tuple[str, ...], conditions: list[str],
-                     metrics: dict, coverage: list[dict], status_labels: dict | None = None) -> None:
+                     metrics: dict, status_labels: dict | None = None) -> None:
     try:
         import matplotlib.pyplot as plt
     except ImportError as exc:
@@ -1042,96 +971,45 @@ def _plot_evaluation(out: Path, methods: tuple[str, ...], conditions: list[str],
     values = np.full((len(methods), len(conditions)), np.nan, dtype=np.float64)
     for i, method in enumerate(methods):
         for j, condition in enumerate(conditions):
-            summary = metrics.get(f'{method}/{condition}/common', {})
-            value = summary.get('rmse')
+            value = metrics.get(f'{method}/{condition}/common', {}).get('rmse')
             if value is not None:
                 values[i, j] = value
-
-    lut_methods = ('frozen_flat_lut', 'endpoint_migrated_lut', 'historical_same_curvature_lut')
-    matrix_methods = ('matrix_project_lut', 'matrix_keep_lut', 'matrix_direct',
-                      'matrix_ridge_project_lut', 'matrix_ridge_keep_lut', 'matrix_ridge_direct')
-    method_index = {method: index for index, method in enumerate(methods)}
-    method_labels = {
-        'frozen_flat_lut': 'Frozen flat LUT',
-        'endpoint_migrated_lut': 'Endpoint H_pt LUT',
-        'historical_same_curvature_lut': 'Historical same-curvature LUT',
-        'matrix_project_lut': 'Project → flat LUT',
-        'matrix_keep_lut': 'Keep → flat LUT',
-        'matrix_direct': 'Direct slopes',
-        'matrix_ridge_project_lut': 'Ridge project → flat LUT',
-        'matrix_ridge_keep_lut': 'Ridge keep → flat LUT',
-        'matrix_ridge_direct': 'Ridge direct slopes',
-    }
-
-    def draw_comparison(selected_methods: tuple[str, ...], title: str, path: Path,
-                        with_status: bool = False) -> None:
-        present = [method for method in selected_methods if method in method_index]
-        if with_status:
-            fig = plt.figure(figsize=(11, 7.4), layout='constrained')
-            grid_spec = fig.add_gridspec(2, 1, height_ratios=(4.2, 1.35), hspace=.12)
-            ax = fig.add_subplot(grid_spec[0])
-            status_ax = fig.add_subplot(grid_spec[1])
-        else:
-            fig, ax = plt.subplots(figsize=(11, 6.2))
-        for method in present:
-            ax.plot(np.arange(len(conditions)), values[method_index[method]], marker='o', linewidth=1.6,
-                    label=method_labels.get(method, method))
-        ax.set_xticks(np.arange(len(conditions)), labels)
-        ax.set_ylabel('Slope-vector RMSE (unitless; lower is better)')
-        ax.set_xlabel('Reference-surface condition')
-        ax.set_title(title)
-        ax.grid(True, alpha=.25)
-        ax.legend(fontsize=8.5, ncol=2 if len(present) > 3 else 1)
-        if with_status:
-            status_map = status_labels or {}
-            status_values = [[method_labels.get(method, method)]
-                             + [status_map.get(method, {}).get(condition, 'n/a')
-                                for condition in conditions] for method in present]
-            status_ax.axis('off')
-            table = status_ax.table(
-                cellText=status_values,
-                colLabels=['Method', *labels],
-                colWidths=[.34] + [.66 / len(conditions)] * len(conditions),
-                cellLoc='center', loc='center')
-            table.auto_set_font_size(False)
-            table.set_fontsize(8)
-            table.scale(1, 1.35)
-            status_ax.set_title('LUT validation status by condition', fontsize=9, pad=2)
-        else:
-            fig.tight_layout()
-        fig.savefig(path, dpi=160)
-        plt.close(fig)
-
-    draw_comparison(lut_methods, 'LUT comparisons on the common test domain',
-                    figure_dir / 'rmse_lut_comparison.png', with_status=True)
-    draw_comparison(('frozen_flat_lut', *matrix_methods), 'Local matrix compensation on the common test domain',
-                    figure_dir / 'rmse_matrix_comparison.png')
-
-    valid_coverage = []
-    for condition in conditions:
-        rows = [row['matrix_valid_area_fraction'] for row in coverage
-                if row['condition'] == condition and row['matrix_valid_area_fraction'] is not None]
-        valid_coverage.append(float(np.mean(rows)) if rows else np.nan)
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    ax.bar(np.arange(len(conditions)), valid_coverage, color='#4c78a8')
+    method_labels = {'frozen_flat_lut': 'Frozen flat LUT',
+                     'endpoint_migrated_lut': 'Endpoint H_pt LUT',
+                     'historical_same_curvature_lut': 'Historical same-curvature LUT'}
+    fig = plt.figure(figsize=(11, 7.4), layout='constrained')
+    grid_spec = fig.add_gridspec(2, 1, height_ratios=(4.2, 1.35), hspace=.12)
+    ax = fig.add_subplot(grid_spec[0])
+    status_ax = fig.add_subplot(grid_spec[1])
+    for index, method in enumerate(methods):
+        ax.plot(np.arange(len(conditions)), values[index], marker='o', linewidth=1.6,
+                label=method_labels.get(method, method))
     ax.set_xticks(np.arange(len(conditions)), labels)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel('Area fraction with full-rank local response')
+    ax.set_ylabel('Slope-vector RMSE (unitless; lower is better)')
     ax.set_xlabel('Reference-surface condition')
-    ax.set_title('Local response matrix support; invalid positions remain reported')
-    ax.grid(True, axis='y', alpha=.25)
-    fig.tight_layout()
-    fig.savefig(figure_dir / 'matrix_coverage.png', dpi=160)
+    ax.set_title('LUT comparisons on the common test domain')
+    ax.grid(True, alpha=.25)
+    ax.legend(fontsize=8.5)
+    status_map = status_labels or {}
+    status_values = [[method_labels.get(method, method)]
+                     + [status_map.get(method, {}).get(condition, 'n/a') for condition in conditions]
+                     for method in methods]
+    status_ax.axis('off')
+    table = status_ax.table(cellText=status_values, colLabels=['Method', *labels],
+                            colWidths=[.34] + [.66 / len(conditions)] * len(conditions),
+                            cellLoc='center', loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(8)
+    table.scale(1, 1.35)
+    status_ax.set_title('LUT validation status by condition', fontsize=9, pad=2)
+    fig.savefig(figure_dir / 'rmse_lut_comparison.png', dpi=160)
     plt.close(fig)
     npz_write(figure_dir / 'figure_data.npz', method_names=np.asarray(methods),
               condition_names=np.asarray(conditions), slope_rmse=values,
-              matrix_valid_area_fraction=np.asarray(valid_coverage, dtype=np.float64),
               lut_validation_status=np.asarray([
-                  [(status_labels or {}).get(method, {}).get(condition, 'n/a') for condition in conditions]
-                  for method in lut_methods], dtype=str),
-              lut_validation_methods=np.asarray(lut_methods),
-              matrix_comparison_methods=np.asarray(('frozen_flat_lut', *matrix_methods)))
-
+                  [status_map.get(method, {}).get(condition, 'n/a') for condition in conditions]
+                  for method in methods], dtype=str),
+              lut_validation_methods=np.asarray(methods))
 
 def _dry_run_report(prepared: dict, output: Path | None) -> dict:
     return dict(status='dry-run', source=str(prepared['root']),
@@ -1144,10 +1022,7 @@ def _dry_run_report(prepared: dict, output: Path | None) -> dict:
                 independent_test_poses=len(prepared['test_poses']),
                 output=str(output or prepared['root'] / 'evaluation' / 'curve_lut_compensation' / '<unique_run>'),
                 render_count=0, cuda_initialized=False,
-                methods=['frozen_flat_lut', 'endpoint_migrated_lut',
-                         'historical_same_curvature_lut', 'matrix_project_lut',
-                         'matrix_keep_lut', 'matrix_direct', 'matrix_ridge_project_lut',
-                         'matrix_ridge_keep_lut', 'matrix_ridge_direct'])
+                methods=list(METHODS), domains=list(DOMAINS))
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -1164,67 +1039,107 @@ def main(argv: list[str] | None = None) -> None:
                         help='Verify and resume the compatible run selected by --out')
     parser.add_argument('--dry-run', action='store_true',
                         help='Read-only input/config/workload check; no CUDA, rendering, or output writes')
+    parser.add_argument('--compare-nonlinear', action='store_true',
+                        help='Compare the v2 finite-slope inverse with existing endpoint LUTs')
+    parser.add_argument('--endpoint-results', type=Path,
+                        help='Completed compensation run reused by --compare-nonlinear')
     args = parser.parse_args(argv)
+    timings = RunTimings(device='cpu', run_mode='resume' if args.resume else 'fresh')
     if args.resume and args.out is None:
         parser.error('--resume requires --out')
-    config = load_experiment_config(args.exp_config)
-    settings = resolve_curve_lut_compensation_settings(config)
-    prepared = prepare(args.lut_results, args.transfer_results, settings)
-    if args.out is not None:
-        parent = (prepared['root'] / 'evaluation' / 'curve_lut_compensation').resolve()
-        resolved_out = args.out.expanduser().resolve()
-        if not resolved_out.is_relative_to(parent) or resolved_out == parent:
-            raise ValueError(f'--out must be a unique run subdirectory of {parent}')
-        if not args.resume and resolved_out.exists() and any(resolved_out.iterdir()):
-            raise ValueError(f'Nonempty output requires a compatible --resume: {resolved_out}')
-    else:
-        resolved_out = None
+    if args.compare_nonlinear != (args.endpoint_results is not None):
+        parser.error('--compare-nonlinear and --endpoint-results must be supplied together')
+    with timings.phase('input_preparation'):
+        config = load_experiment_config(args.exp_config)
+        settings = resolve_curve_lut_compensation_settings(config)
+        prepared = prepare(args.lut_results, args.transfer_results, settings)
+        if args.out is not None:
+            parent = (prepared['root'] / 'evaluation' / 'curve_lut_compensation').resolve()
+            resolved_out = args.out.expanduser().resolve()
+            if not resolved_out.is_relative_to(parent) or resolved_out == parent:
+                raise ValueError(f'--out must be a unique run subdirectory of {parent}')
+            if not args.resume and resolved_out.exists() and any(resolved_out.iterdir()):
+                raise ValueError(f'Nonempty output requires a compatible --resume: {resolved_out}')
+        else:
+            resolved_out = None
+    if args.compare_nonlinear:
+        from .comparison import run_comparison
+        run_comparison(prepared, args.endpoint_results, resolved_out,
+                       resume=args.resume, dry_run=args.dry_run)
+        return
     if args.dry_run:
         if args.resume:
-            start_run(prepared, settings, resolved_out, True)
+            start_run(prepared, settings, resolved_out, True, update_scope=False)
         print(json.dumps(_dry_run_report(prepared, resolved_out), ensure_ascii=False, indent=2))
         return
 
-    checkpoint = start_run(prepared, settings, resolved_out, args.resume)
+    timings.set_device(str(prepared['base'].get('render', {}).get('device', 'cuda:0')))
+    with timings.phase('output_setup'):
+        checkpoint = start_run(prepared, settings, resolved_out, args.resume)
     print(f'Experiment output: {checkpoint.root}', flush=True)
     if checkpoint.manifest.get('status') == 'completed':
         print('Completed run verified; no artifacts rewritten.')
         return
+    resumed_checkpoint_count = len(checkpoint.manifest.get('completed', {})) if args.resume else 0
+    timings.attach(checkpoint.root)
     start_time = time.perf_counter()
-    models, execution = _build_photometry_models(prepared)
-    checkpoint.manifest.setdefault('execution', {}).update(
-        device=prepared['base'].get('render', {}).get('device', 'cuda:0'),
-        photometry=execution)
-    checkpoint.save()
-    migrated = run_migrations(prepared, checkpoint, models, settings)
-    endpoint_luts = fit_conditions(prepared, checkpoint, migrated)
-    training_diagnostics = diagnose_training_transfer(prepared, checkpoint, migrated)
-    checkpoint.manifest.setdefault('training_diagnostics', {}).update(training_diagnostics)
-    checkpoint.save()
-    matrix_cache = _compute_matrix_cache(prepared, checkpoint, models, settings)
-    metrics = evaluate_all(prepared, checkpoint, endpoint_luts, matrix_cache)
-    status_labels = {
-        'endpoint_migrated_lut': {
-            name: checkpoint.manifest['calibration'][name]['status']
-            + (' diagnostic' if checkpoint.manifest['calibration'][name]['status'] != 'passed' else '')
-            for name in prepared['conditions']},
-        'historical_same_curvature_lut': {
-            name: prepared['calibration_status'].get(name, {}).get('status', 'published')
-            + (' diagnostic' if prepared['calibration_status'].get(name, {}).get('status') != 'passed' else '')
-            for name in prepared['conditions']},
-        'frozen_flat_lut': {name: 'published' for name in prepared['conditions']},
-    }
-    _plot_evaluation(checkpoint.root, tuple(metrics['methods']), list(prepared['conditions']),
-                     metrics['metrics'], metrics['coverage'], status_labels=status_labels)
+    try:
+        with timings.phase('model_initialization'):
+            models, execution = _build_photometry_models(prepared)
+            checkpoint.manifest.setdefault('execution', {}).update(
+                device=prepared['base'].get('render', {}).get('device', 'cuda:0'),
+                photometry=execution)
+            checkpoint.save()
+        migrated = run_migrations(prepared, checkpoint, models, settings, timings=timings)
+        endpoint_luts = fit_conditions(prepared, checkpoint, migrated, timings=timings)
+        with timings.phase('training_diagnostics'):
+            training_diagnostics = diagnose_training_transfer(prepared, checkpoint, migrated)
+            checkpoint.manifest.setdefault('training_diagnostics', {}).update(training_diagnostics)
+            checkpoint.save()
+        with timings.phase('evaluation'):
+            metrics = evaluate_all(prepared, checkpoint, endpoint_luts, timings=timings)
+        with timings.phase('plotting'):
+            status_labels = {
+                'endpoint_migrated_lut': {
+                    name: checkpoint.manifest['calibration'][name]['status']
+                    + (' diagnostic' if checkpoint.manifest['calibration'][name]['status'] != 'passed' else '')
+                    for name in prepared['conditions']},
+                'historical_same_curvature_lut': {
+                    name: prepared['calibration_status'].get(name, {}).get('status', 'published')
+                    + (' diagnostic' if prepared['calibration_status'].get(name, {}).get('status') != 'passed' else '')
+                    for name in prepared['conditions']},
+                'frozen_flat_lut': {name: 'published' for name in prepared['conditions']},
+            }
+            _plot_evaluation(checkpoint.root, tuple(metrics['methods']), list(prepared['conditions']),
+                             metrics['metrics'], status_labels=status_labels)
+    except BaseException as error:
+        try:
+            timings.finish('failed')
+        except Exception as reporting_error:
+            add_note = getattr(error, 'add_note', None)
+            if add_note is not None:
+                add_note(f'Unable to save timing report: {reporting_error}')
+            else:
+                print(f'Unable to save timing report: {reporting_error}', flush=True)
+        raise
     elapsed = time.perf_counter() - start_time
+    timings.finish('completed')
     json_write(checkpoint.root / 'runtime.json',
-               dict(elapsed_seconds=elapsed, execution=checkpoint.manifest['execution']))
+               dict(elapsed_seconds=elapsed,
+                    elapsed_scope='model_initialization_through_plotting_current_invocation',
+                    execution=checkpoint.manifest['execution'],
+                    resumed_checkpoint_count=resumed_checkpoint_count,
+                    workload={key: value for key, value in prepared['workload'].items()
+                              if key != 'source_sample_count_by_pose'},
+                    timing=timings.report(status='completed')))
     checkpoint.manifest['evaluation'] = dict(
         status=metrics['status'], metric_count=len(metrics['metrics']),
         baseline_reproduction=metrics['historical_flat_baseline_reproduction'])
     files = [checkpoint.root / name for name in
              ('metrics.json', 'per_pose.csv', 'cross_method.csv', 'coverage.csv', 'runtime.json')]
-    files += [path for folder in ('figures', 'training_diagnostics', 'calibration', 'matrix', 'samples')
+    files += [checkpoint.root / 'figures' / name for name in ('rmse_lut_comparison.png', 'figure_data.npz')]
+    files += [path for folder in ('training_diagnostics', 'calibration', 'samples',
+                                 'runtime_sessions')
               for path in (checkpoint.root / folder).rglob('*') if path.is_file()]
     checkpoint.complete('evaluation', files, status=metrics['status'], elapsed_seconds=elapsed)
     checkpoint.manifest['status'] = 'completed'

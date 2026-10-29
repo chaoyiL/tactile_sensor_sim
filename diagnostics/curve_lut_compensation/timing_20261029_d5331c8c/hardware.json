@@ -1,0 +1,7 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 197 Stepping 2, GenuineIntel",
+  "logical_cpu_count": 16,
+  "gpu_before": "name, driver_version, memory.total [MiB], memory.used [MiB], utilization.gpu [%], power.draw [W]\nNVIDIA GeForce RTX 5050 Laptop GPU, 610.62, 8151 MiB, 195 MiB, 0 %, 3.88 W",
+  "free_disk_bytes_before": 169955831808
+}

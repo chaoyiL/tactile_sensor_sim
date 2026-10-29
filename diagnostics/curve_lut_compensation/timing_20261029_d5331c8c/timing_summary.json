@@ -1,0 +1,133 @@
+{
+  "run_id": "timing_20261029_d5331c8c",
+  "process_wall_seconds": 656.4290699999547,
+  "main_wall_seconds": 643.6652337999549,
+  "stages": {
+    "endpoint_fit": 55.8621791000478,
+    "endpoint_migration": 477.7156709000701,
+    "evaluation": 56.011980800074525,
+    "input_preparation": 3.7798056000610813,
+    "matrix_condition": 19.551744299940765,
+    "matrix_reference": 0.884080299991183,
+    "model_initialization": 3.0183771000010893,
+    "output_setup": 0.041530099930241704,
+    "plotting": 1.7510361999738961,
+    "training_diagnostics": 25.013376099988818
+  },
+  "per_condition": [
+    {
+      "condition": "flat",
+      "migration_seconds": 83.74018790002447,
+      "fit_seconds": 14.467435400001705,
+      "endpoint_seconds": 98.20762330002617,
+      "matrix_seconds": 4.429380299989134,
+      "samples": 2279043,
+      "new": 704,
+      "reused": 0,
+      "query_seconds": 0.3498672005953267,
+      "query_calls": 126,
+      "query_samples": 432998,
+      "query_ms_per_pose": 2.7767238142486246,
+      "query_us_per_sample": 0.8080111238281164
+    },
+    {
+      "condition": "radius_200",
+      "migration_seconds": 124.00109320005868,
+      "fit_seconds": 13.946682800073177,
+      "endpoint_seconds": 137.94777600013185,
+      "matrix_seconds": 5.102659999975003,
+      "samples": 2254308,
+      "new": 704,
+      "reused": 0,
+      "query_seconds": 0.36160159984137863,
+      "query_calls": 126,
+      "query_samples": 427808,
+      "query_ms_per_pose": 2.8698539669950685,
+      "query_us_per_sample": 0.8452427253379521
+    },
+    {
+      "condition": "radius_100",
+      "migration_seconds": 136.78267079999205,
+      "fit_seconds": 13.776420900016092,
+      "endpoint_seconds": 150.55909170000814,
+      "matrix_seconds": 5.055305500049144,
+      "samples": 2231521,
+      "new": 704,
+      "reused": 0,
+      "query_seconds": 0.3485305999638513,
+      "query_calls": 126,
+      "query_samples": 422776,
+      "query_ms_per_pose": 2.7661158727289785,
+      "query_us_per_sample": 0.8243859631669047
+    },
+    {
+      "condition": "radius_50",
+      "migration_seconds": 133.19171899999492,
+      "fit_seconds": 13.671639999956824,
+      "endpoint_seconds": 146.86335899995174,
+      "matrix_seconds": 4.9643984999274835,
+      "samples": 2177783,
+      "new": 704,
+      "reused": 0,
+      "query_seconds": 0.3397862003184855,
+      "query_calls": 126,
+      "query_samples": 413172,
+      "query_ms_per_pose": 2.6967158755435356,
+      "query_us_per_sample": 0.8223843830619827
+    }
+  ],
+  "query_ms_per_pose": [
+    {
+      "method": "frozen_flat_lut",
+      "radius_200": 2.8802269833191994,
+      "radius_100": 2.770311105811584,
+      "radius_50": 2.689042065795215
+    },
+    {
+      "method": "endpoint_migrated_lut",
+      "radius_200": 2.8698539669950685,
+      "radius_100": 2.7661158727289785,
+      "radius_50": 2.6967158755435356
+    },
+    {
+      "method": "matrix_project_lut",
+      "radius_200": 3.124258730427495,
+      "radius_100": 3.270430152215773,
+      "radius_50": 3.0497746045021192
+    },
+    {
+      "method": "matrix_keep_lut",
+      "radius_200": 3.2613539609998936,
+      "radius_100": 3.120863489577517,
+      "radius_50": 3.132894440251033
+    },
+    {
+      "method": "matrix_direct",
+      "radius_200": 0.2603753893044851,
+      "radius_100": 0.24325237886625387,
+      "radius_50": 0.23076904564356757
+    },
+    {
+      "method": "matrix_ridge_project_lut",
+      "radius_200": 3.267129362072973,
+      "radius_100": 3.219995234671625,
+      "radius_50": 3.041099203521356
+    },
+    {
+      "method": "matrix_ridge_keep_lut",
+      "radius_200": 3.22470475553668,
+      "radius_100": 3.215100796383229,
+      "radius_50": 3.075396038761865
+    },
+    {
+      "method": "matrix_ridge_direct",
+      "radius_200": 0.2493904746462783,
+      "radius_100": 0.2435555576258117,
+      "radius_50": 0.2514230104030243
+    }
+  ],
+  "scope": {
+    "offline": "migration and fit phases, including phase IO/checkpoints; shared initialization separate",
+    "query": "CPU NumPy prediction of full valid archived material samples; no image rendering, IO or metric computation"
+  }
+}
